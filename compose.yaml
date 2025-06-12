@@ -1,0 +1,18 @@
+services:
+  redis:
+    container: job-appl-tracker-redis
+    image: 8.0.2-alpine
+    ports:
+      - 6380:6379
+    networks:
+      - main
+    volumes: redis:/data
+    env_file: .redis.env
+    command: redis-server --save 60 1 --loglevel warning
+
+networks:
+  main:
+    driver: bridge
+
+volumes:
+  redis:

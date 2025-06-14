@@ -1,14 +1,12 @@
 services:
   backend:
-    build:
-      context: ./backend
-      dockerfile: .
+    build: ./backend
     ports:
       - 3001:3001
     networks:
       - main
     volumes:
-      - ./backend:/usr/src/app/:ro
+      - ./backend:/usr/src/app:rw
     env_file:
       - ./backend/.env
 

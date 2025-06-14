@@ -1,13 +1,28 @@
 services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: .
+    ports:
+      - 3001:3001
+    networks:
+      - main
+    volumes:
+      - ./backend:/usr/src/app/:ro
+    env_file:
+      - ./backend/.env
+
   redis:
-    container: job-appl-tracker-redis
-    image: 8.0.2-alpine
+    container_name: job-appl-tracker-redis
+    image: redis:8.0.2-alpine
     ports:
       - 6380:6379
     networks:
       - main
-    volumes: redis:/data
-    env_file: .redis.env
+    volumes:
+      - redis:/data
+    env_file: 
+      - .redis.env
     command: redis-server --save 60 1 --loglevel warning
 
 networks:

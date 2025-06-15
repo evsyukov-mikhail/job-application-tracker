@@ -4,6 +4,5 @@ import { JobApplicationsModule } from './job-applications/job-applications.modul
 
 @Module({
   imports: [JobApplicationsModule],
-  controllers: [JobApplicationsController],
 })
 export class AppModule {}

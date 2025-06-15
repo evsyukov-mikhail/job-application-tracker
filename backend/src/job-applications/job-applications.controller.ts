@@ -1,40 +1,36 @@
-import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Inject, Param, Post, Res } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Post, Res } from '@nestjs/common';
 import { Response } from 'express';
-import { Model } from 'mongoose';
 import { JobApplicationDTO } from 'src/dtos/job-application.dto';
-import { JobApplication } from 'src/interfaces/job-application.interface';
+import { JobApplicationsService } from './job-applications.service';
 
 @Controller('job-applications')
 export class JobApplicationsController {
 
   constructor(
-    @Inject('JOB_APPLICATION_MODEL')
-    private jobApplicationModel: Model<JobApplication>
+    private jobApplicationsService: JobApplicationsService,
   ) {}
 
   @Get()
   async getJobApplications(@Res() res: Response) {
-    return await this.jobApplicationModel.find().exec();
+    const jobApplications = await this.jobApplicationsService.findAllJobApplications();
+    return res.status(200).json(jobApplications);
   }
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
-  async createJobApplication(@Body() dto: JobApplicationDTO) {
-    const jobApplication = new this.jobApplicationModel();
-    return await jobApplication.save();
+  async createJobApplication(@Res() res: Response, @Body() dto: JobApplicationDTO) {
+    const createdJobApplication = await this.jobApplicationsService.createJobApplication(dto);
+    return res.status(200).json(createdJobApplication);
   }
 
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  async deleteJobApplication(
-    @Res() res: Response,
-    @Param('id') id: string,
-  ) {
-    const deletedJobApplication = await this.jobApplicationModel.findByIdAndDelete(id).exec();
+  async deleteJobApplication(@Res() res: Response, @Param('id') id: string) {
+    const deletedJobApplication = await this.jobApplicationsService.deleteJobApplication(id);
     if (!deletedJobApplication) {
       return res.status(404).json({ message: `Job application with ID ${id} was not found` });
     }
-    return;
+    return res.status(200).json({ message: `Successfully deleted job application with ID ${id}` })
   }
 
 }

@@ -2,6 +2,7 @@ import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Post, Put, 
 import { Response } from 'express';
 import { JobApplicationDTO } from '../dtos/job-application.dto';
 import { JobApplicationsService } from './job-applications.service';
+import { UpdateJobApplicationStatusDTO } from 'src/interfaces/job-application-status.dto';
 
 @Controller('job-applications')
 export class JobApplicationsController {
@@ -32,8 +33,20 @@ export class JobApplicationsController {
   }
 
   @Put(':id')
-  async updateJobApplicationStatus(@Res() res: Response) {
-    return;
+  async updateJobApplicationStatus(
+    @Res() res: Response,
+    @Body() dto: UpdateJobApplicationStatusDTO,
+    @Param('id') id: string
+  ) {
+    try {
+      const updatedJobApplication = await this.jobApplicationsService.updateJobApplicationStatus(id, dto.status);
+      if (!updatedJobApplication) {
+        throw new Error(`Job application with ID ${id} was not found`);
+      }
+      return res.status(200).json(updatedJobApplication);
+    } catch (error) {
+      return res.status(400).json({ message: (error as Error).message });
+    }
   }
 
   @Delete(':id')

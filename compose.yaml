@@ -9,6 +9,11 @@ services:
       - ./backend:/usr/src/app:rw
     env_file:
       - ./backend/.env
+    develop:
+      watch:
+        - path: ./backend
+          action: sync
+          target: /usr/src/app
 
   redis:
     container_name: job-appl-tracker-redis

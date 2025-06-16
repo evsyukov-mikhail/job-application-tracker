@@ -30,6 +30,20 @@ export class JobApplicationsController {
     }
   }
 
+  @Get('/search')
+  async findJobApplicationsByKeywords(
+    @Res() res: Response,
+    @Query('companyName') companyName: string,
+    @Query('jobTitle') jobTitle: string
+  ) {
+    try {
+      const jobApplications = await this.jobApplicationsService.findJobApplicationsByKeywords(companyName, jobTitle);
+      return res.status(200).json(jobApplications);
+    } catch (error) {
+      return res.status(400).json({ message: (error as Error).message });
+    }
+  }
+
   @Post()
   @HttpCode(HttpStatus.CREATED)
   async createJobApplication(@Res() res: Response, @Body() dto: JobApplicationDTO) {

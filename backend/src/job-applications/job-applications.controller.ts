@@ -1,6 +1,6 @@
-import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Post, Put, Res } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Post, Put, Query, Res } from '@nestjs/common';
 import { Response } from 'express';
-import { JobApplicationDTO } from '../dtos/job-application.dto';
+import { JobApplicationDTO, Status } from '../dtos/job-application.dto';
 import { JobApplicationsService } from './job-applications.service';
 import { JobApplicationStatusDTO } from 'src/interfaces/job-application-status.dto';
 
@@ -12,20 +12,19 @@ export class JobApplicationsController {
   ) {}
 
   @Get()
-  async findAllJobApplications(@Res() res: Response) {
+  async findAllJobApplications(@Res() res: Response, @Query('status') status: Status) {
     try {
-      const jobApplications = await this.jobApplicationsService.findAllJobApplications();
-      return res.status(200).json(jobApplications);
-    } catch (error) {
-      return res.status(400).json({ message: (error as Error).message });
-    }
-  }
+      if (!status) {
+        const jobApplications = await this.jobApplicationsService.findAllJobApplications();
+        return res.status(200).json(jobApplications);
+      }
 
-  @Get('/status')
-  async findJobApplicationsByStatus(@Res() res: Response, @Body() dto: JobApplicationStatusDTO) {
-    try {
-      const jobApplications = await this.jobApplicationsService.findJobApplicationsByStatus(dto.status);
-      return res.status(200).json(jobApplications);
+      if (!Object.values(Status).includes(status)) {
+        throw new Error(`Failed to find status ${status}`);
+      }
+      
+      const jobApplicationsByStatus = await this.jobApplicationsService.findJobApplicationsByStatus(status);
+      return res.status(200).json(jobApplicationsByStatus);
     } catch (error) {
       return res.status(400).json({ message: (error as Error).message });
     }

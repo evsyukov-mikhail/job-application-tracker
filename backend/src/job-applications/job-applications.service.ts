@@ -25,6 +25,20 @@ export class JobApplicationsService {
     return this.jobApplicationModel.find({ status });
   }
 
+  findJobApplicationsByKeywords(companyName: string, jobTitle: string): Promise<JobApplication[]> {
+    const query: any = {};
+
+    if (companyName) {
+      query.companyName = { $regex: new RegExp(companyName, 'i') };
+    }
+
+    if (jobTitle) {
+      query.jobTitle = { $regex: new RegExp(jobTitle, 'i') };
+    }
+
+    return this.jobApplicationModel.find(query);
+  }
+
   createJobApplication(dto: JobApplicationDTO): Promise<JobApplication> {
     const jobApplication = new this.jobApplicationModel(dto);
     return jobApplication.save();

@@ -1,11 +1,11 @@
 import { Type } from "class-transformer";
 import { IsDate, IsEnum, IsNotEmpty, IsString } from "class-validator";
 
-enum Status {
-  APPLIED,
-  INTERVIEWING,
-  OFFER,
-  REJECTED
+export enum Status {
+  APPLIED = 'Applied',
+  INTERVIEWING = 'Interviewing',
+  OFFER = 'Offer',
+  REJECTED = 'Rejected',
 }
 
 export class JobApplicationDTO {

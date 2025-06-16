@@ -19,7 +19,7 @@ export class JobApplicationsService {
     return jobApplication.save();
   }
 
-  deleteJobApplication(id: string) {
-    return this.jobApplicationModel.findByIdAndDelete(id).exec();
+  deleteJobApplication(id: string): Promise<JobApplication | null> {
+    return this.jobApplicationModel.findByIdAndDelete(id);
   }
 }

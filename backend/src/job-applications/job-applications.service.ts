@@ -21,6 +21,10 @@ export class JobApplicationsService {
     return this.jobApplicationModel.find({});
   }
 
+  findJobApplicationsByStatus(status: Status): Promise<JobApplication[]> {
+    return this.jobApplicationModel.find({ status });
+  }
+
   createJobApplication(dto: JobApplicationDTO): Promise<JobApplication> {
     const jobApplication = new this.jobApplicationModel(dto);
     return jobApplication.save();

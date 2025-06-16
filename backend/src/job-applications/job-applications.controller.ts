@@ -2,7 +2,7 @@ import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Post, Put, 
 import { Response } from 'express';
 import { JobApplicationDTO } from '../dtos/job-application.dto';
 import { JobApplicationsService } from './job-applications.service';
-import { UpdateJobApplicationStatusDTO } from 'src/interfaces/job-application-status.dto';
+import { JobApplicationStatusDTO } from 'src/interfaces/job-application-status.dto';
 
 @Controller('job-applications')
 export class JobApplicationsController {
@@ -12,9 +12,19 @@ export class JobApplicationsController {
   ) {}
 
   @Get()
-  async getJobApplications(@Res() res: Response) {
+  async findAllJobApplications(@Res() res: Response) {
     try {
       const jobApplications = await this.jobApplicationsService.findAllJobApplications();
+      return res.status(200).json(jobApplications);
+    } catch (error) {
+      return res.status(400).json({ message: (error as Error).message });
+    }
+  }
+
+  @Get('/status')
+  async findJobApplicationsByStatus(@Res() res: Response, @Body() dto: JobApplicationStatusDTO) {
+    try {
+      const jobApplications = await this.jobApplicationsService.findJobApplicationsByStatus(dto.status);
       return res.status(200).json(jobApplications);
     } catch (error) {
       return res.status(400).json({ message: (error as Error).message });
@@ -35,7 +45,7 @@ export class JobApplicationsController {
   @Put(':id')
   async updateJobApplicationStatus(
     @Res() res: Response,
-    @Body() dto: UpdateJobApplicationStatusDTO,
+    @Body() dto: JobApplicationStatusDTO,
     @Param('id') id: string
   ) {
     try {

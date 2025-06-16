@@ -5,8 +5,6 @@ services:
       - 3001:3001
     networks:
       - main
-    volumes:
-      - ./backend:/usr/src/app:rw
     env_file:
       - ./backend/.env
     develop:

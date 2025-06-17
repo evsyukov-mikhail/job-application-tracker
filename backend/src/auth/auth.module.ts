@@ -4,15 +4,18 @@ import { AuthService } from './auth.service';
 import { authProviders } from './auth.providers';
 import { DatabaseModule } from 'src/database/database.module';
 import { CryptoService } from 'src/crypto/crypto.service';
-import { JwtService } from '@nestjs/jwt';
+import { JwtModule, JwtService } from '@nestjs/jwt';
 import { CryptoModule } from 'src/crypto/crypto.module';
 
 @Module({
-  imports: [DatabaseModule, CryptoModule],
+  imports: [DatabaseModule, CryptoModule, JwtModule.register({
+    global: true,
+    secret: process.env.JWT_SECRET_KEY,
+    signOptions: { expiresIn: '1h' },
+  })],
   controllers: [AuthController],
   providers: [
     AuthService,
-    JwtService,
     ...authProviders,
   ]
 })

@@ -9,5 +9,9 @@ export const JobApplicationSchema = new mongoose.Schema({
     enum: ['Applied', 'Interviewing', 'Offer', 'Rejected'],
     default: 'Applied',
   },
-  notes: String
+  notes: String,
+  userId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+  }
 });

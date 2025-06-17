@@ -10,7 +10,7 @@ services:
     develop:
       watch:
         - path: ./backend
-          action: sync
+          action: rebuild
           target: /usr/src/app
 
   redis:

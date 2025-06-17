@@ -1,19 +1,21 @@
-import { Injectable } from '@nestjs/common';
-import crypto from 'node:crypto';
+import { Inject, Injectable } from '@nestjs/common';
+import * as crypto from 'node:crypto';
+
+export const CRYPTO_SECRET_KEY = "CRYPTO_SECRET_KEY";
 
 @Injectable()
 export class CryptoService {
 
   private key: string;
   private iv: Buffer;
+  private algorithm: string = "aes-256-cbc";
 
   constructor(
-    private secretKey: string, 
-    private algorithm: string = "aes-256-cbc",
+    @Inject(CRYPTO_SECRET_KEY)
+    private secretKey: string,
   ) {
-    this.key = crypto.
-      createHash('sha512').
-      update(secretKey).
+    this.key = crypto.createHash('sha512').
+      update(this.secretKey).
       digest('hex').
       substring(0, 32);
 

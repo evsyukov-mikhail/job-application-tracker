@@ -2,7 +2,7 @@ import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Post, Put, 
 import { Response } from 'express';
 import { JobApplicationDTO, Status } from '../dtos/job-application.dto';
 import { JobApplicationsService } from './job-applications.service';
-import { JobApplicationStatusDTO } from 'src/interfaces/job-application-status.dto';
+import { JobApplicationStatusDTO } from 'src/dtos/job-application-status.dto';
 
 @Controller('job-applications')
 export class JobApplicationsController {

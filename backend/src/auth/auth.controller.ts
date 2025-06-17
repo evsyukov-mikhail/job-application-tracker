@@ -1,8 +1,9 @@
-import { Controller, Post } from '@nestjs/common';
+import { Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
 
 @Controller('auth')
 export class AuthController {
 
+  @HttpCode(HttpStatus.OK)
   @Post('/signin')
   async signIn() {
     
@@ -10,7 +11,7 @@ export class AuthController {
 
   @Post('/login')
   async login() {
-    
+
   }
 
 }

@@ -1,12 +1,23 @@
-import { Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
+import { Body, Controller, HttpCode, HttpStatus, Post, Res } from '@nestjs/common';
+import { Response } from 'express';
+import { AuthService } from './auth.service';
+import { UserDTO } from 'src/dtos/user.dto';
 
 @Controller('auth')
 export class AuthController {
+  constructor(
+    private authService: AuthService,
+  ) {}
 
   @HttpCode(HttpStatus.OK)
   @Post('/signin')
-  async signIn() {
-    
+  async signIn(@Res() res: Response, @Body() dto: UserDTO) {
+    try {
+      const result = await this.authService.signIn(dto);
+      return res.status(200).json(result);
+    } catch (error) {
+      return res.status(400).json({ message: (error as Error).message });
+    }
   }
 
   @Post('/login')

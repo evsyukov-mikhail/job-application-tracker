@@ -9,4 +9,8 @@ export class AuthService {
     private userModel: Model<User>,
     private jwtService: JwtService,
   ) {}
+
+  signIn() {
+    
+  }
 }

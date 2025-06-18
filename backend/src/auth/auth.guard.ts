@@ -21,7 +21,7 @@ export class AuthGuard implements CanActivate {
 
       request['user'] = payload;
     } catch (error) {
-      throw new UnauthorizedException();
+      throw new UnauthorizedException('Failed to verify token');
     }
 
     return true;

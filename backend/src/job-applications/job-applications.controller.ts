@@ -1,8 +1,9 @@
-import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Post, Put, Query, Res } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Post, Put, Query, Res, UseGuards } from '@nestjs/common';
 import { Response } from 'express';
 import { JobApplicationDTO, Status } from '../dtos/job-application.dto';
 import { JobApplicationsService } from './job-applications.service';
 import { JobApplicationStatusDTO } from 'src/dtos/job-application-status.dto';
+import { AuthGuard } from 'src/auth/auth.guard';
 
 @Controller('job-applications')
 export class JobApplicationsController {
@@ -11,6 +12,7 @@ export class JobApplicationsController {
     private jobApplicationsService: JobApplicationsService,
   ) {}
 
+  @UseGuards(AuthGuard)
   @Get()
   async findAllJobApplications(@Res() res: Response, @Query('status') status: Status) {
     try {
@@ -30,6 +32,7 @@ export class JobApplicationsController {
     }
   }
 
+  @UseGuards(AuthGuard)
   @Get('/search')
   async findJobApplicationsByKeywords(
     @Res() res: Response,
@@ -44,6 +47,7 @@ export class JobApplicationsController {
     }
   }
 
+  @UseGuards(AuthGuard)
   @Post()
   @HttpCode(HttpStatus.CREATED)
   async createJobApplication(@Res() res: Response, @Body() dto: JobApplicationDTO) {
@@ -55,6 +59,7 @@ export class JobApplicationsController {
     }
   }
 
+  @UseGuards(AuthGuard)
   @Put(':id')
   async updateJobApplicationStatus(
     @Res() res: Response,
@@ -72,6 +77,7 @@ export class JobApplicationsController {
     }
   }
 
+  @UseGuards(AuthGuard)
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   async deleteJobApplication(@Res() res: Response, @Param('id') id: string) {

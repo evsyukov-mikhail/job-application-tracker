@@ -15,7 +15,7 @@ export class AuthService {
     private jwtService: JwtService,
   ) {}
 
-  async signIn(dto: UserDTO): Promise<AuthResult> {
+  async signUp(dto: UserDTO): Promise<AuthResult> {
     const userExists = await this.userModel.findOne({ $or: [{ username: dto.username }, { email: dto.email }] });
     if (userExists) {
       throw new Error(`User with username ${dto.username} or email ${dto.email} already exists`);

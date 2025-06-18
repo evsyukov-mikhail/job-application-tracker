@@ -10,10 +10,10 @@ export class AuthController {
   ) {}
 
   @HttpCode(HttpStatus.OK)
-  @Post('/signin')
-  async signIn(@Res() res: Response, @Body() dto: UserDTO) {
+  @Post('/signup')
+  async signUp(@Res() res: Response, @Body() dto: UserDTO) {
     try {
-      const result = await this.authService.signIn(dto);
+      const result = await this.authService.signUp(dto);
       return res.status(200).json(result);
     } catch (error) {
       return res.status(400).json({ message: (error as Error).message });

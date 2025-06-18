@@ -1,6 +1,6 @@
 import { Connection } from "mongoose";
-import { JobApplicationSchema } from "src/schemas/job-application.schema";
-import { UserSchema } from "src/schemas/user.schema";
+import { JobApplicationSchema } from "../schemas/job-application.schema";
+import { UserSchema } from "../schemas/user.schema";
 
 export const jobApplicationsProviders = [
   {

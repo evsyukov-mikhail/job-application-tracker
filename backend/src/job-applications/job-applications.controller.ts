@@ -2,8 +2,8 @@ import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Post, Put, 
 import { Response } from 'express';
 import { JobApplicationDTO, Status } from '../dtos/job-application.dto';
 import { JobApplicationsService } from './job-applications.service';
-import { JobApplicationStatusDTO } from 'src/dtos/job-application-status.dto';
-import { AuthGuard } from 'src/auth/auth.guard';
+import { JobApplicationStatusDTO } from '../dtos/job-application-status.dto';
+import { AuthGuard } from '../auth/auth.guard';
 
 @Controller('job-applications')
 export class JobApplicationsController {

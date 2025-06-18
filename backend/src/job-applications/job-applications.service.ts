@@ -1,7 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { Model } from 'mongoose';
-import { JobApplicationDTO, Status } from 'src/dtos/job-application.dto';
-import { JobApplication } from 'src/interfaces/job-application.interface';
+import { JobApplicationDTO, Status } from '../dtos/job-application.dto';
+import { JobApplication } from '../interfaces/job-application.interface';
 
 @Injectable()
 export class JobApplicationsService {

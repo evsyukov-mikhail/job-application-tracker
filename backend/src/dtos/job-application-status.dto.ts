@@ -1,5 +1,5 @@
 import { IsEnum, IsNotEmpty } from "class-validator";
-import { Status } from "src/dtos/job-application.dto";
+import { Status } from "./job-application.dto";
 
 export class JobApplicationStatusDTO {
   @IsEnum(Status)

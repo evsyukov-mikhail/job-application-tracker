@@ -1,11 +1,16 @@
-import { CanActivate, ExecutionContext, Injectable, UnauthorizedException } from '@nestjs/common';
+import { CanActivate, ExecutionContext, Inject, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
-import { Observable } from 'rxjs';
+import { Model } from 'mongoose';
+import { User } from 'src/interfaces/user.interface';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
-  constructor(private jwtService: JwtService) {}
+  constructor(
+    @Inject('USER_MODEL')
+    private userModel: Model<User>,
+    private jwtService: JwtService
+  ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
@@ -15,13 +20,18 @@ export class AuthGuard implements CanActivate {
     }
 
     try {
-      const payload = await this.jwtService.verifyAsync(token, {
+      const { username, email } = await this.jwtService.verifyAsync(token, {
         secret: process.env.JWT_SECRET_KEY
       });
 
-      request['user'] = payload;
+      const user = await this.userModel.findOne({ username, email });
+      if (!user) {
+        throw new NotFoundException(`Failed to find user by username ${username} and email ${email}`);
+      }
+
+      request['userId'] = user._id;
     } catch (error) {
-      throw new UnauthorizedException('Failed to verify token');
+      throw new UnauthorizedException((error as Error).message);
     }
 
     return true;

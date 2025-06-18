@@ -15,16 +15,14 @@ export class JobApplicationsController {
   @UseGuards(AuthGuard)
   @Get()
   async findAllJobApplications(
-    @Req() req: Request,
+    @Req() req: Request & { userId: string },
     @Res() res: Response,
     @Query('status') status: Status
   ) {
     try {
-      const { userId } = req.body;
-
       if (!status) {
         const jobApplications = await this.jobApplicationsService.
-          findAllJobApplications(userId);
+          findAllJobApplications(req.userId);
         return res.status(200).json(jobApplications);
       }
 
@@ -33,7 +31,7 @@ export class JobApplicationsController {
       }
       
       const jobApplicationsByStatus = await this.jobApplicationsService.
-        findJobApplicationsByStatus(userId, status);
+        findJobApplicationsByStatus(req.userId, status);
       return res.status(200).json(jobApplicationsByStatus);
     } catch (error) {
       return res.status(400).json({ message: (error as Error).message });
@@ -43,16 +41,14 @@ export class JobApplicationsController {
   @UseGuards(AuthGuard)
   @Get('/search')
   async findJobApplicationsByKeywords(
-    @Req() req: Request,
+    @Req() req: Request & { userId: string },
     @Res() res: Response,
     @Query('companyName') companyName: string,
     @Query('jobTitle') jobTitle: string
   ) {
     try {
-      const { userId } = req.body;
-
       const jobApplications = await this.jobApplicationsService.
-        findJobApplicationsByKeywords(userId, companyName, jobTitle);
+        findJobApplicationsByKeywords(req.userId, companyName, jobTitle);
       return res.status(200).json(jobApplications);
     } catch (error) {
       return res.status(400).json({ message: (error as Error).message });
@@ -63,15 +59,13 @@ export class JobApplicationsController {
   @Post()
   @HttpCode(HttpStatus.CREATED)
   async createJobApplication(
-    @Req() req: Request,
+    @Req() req: Request & { userId: string },
     @Res() res: Response,
     @Body() dto: JobApplicationDTO
   ) {
     try {
-      const { userId } = req.body;
-
       const createdJobApplication = await this.jobApplicationsService.
-        createJobApplication(userId, dto);
+        createJobApplication(req.userId, dto);
       return res.status(200).json(createdJobApplication);
     } catch (error) {
       return res.status(400).json({ message: (error as Error).message });
@@ -81,16 +75,14 @@ export class JobApplicationsController {
   @UseGuards(AuthGuard)
   @Put(':id')
   async updateJobApplicationStatus(
-    @Req() req: Request,
+    @Req() req: Request & { userId: string },
     @Res() res: Response,
     @Body() dto: JobApplicationStatusDTO,
     @Param('id') id: string
   ) {
     try {
-      const { userId } = req.body;
-
       const updatedJobApplication = await this.jobApplicationsService.
-        updateJobApplicationStatus(userId, id, dto.status);
+        updateJobApplicationStatus(req.userId, id, dto.status);
       if (!updatedJobApplication) {
         throw new Error(`Job application with ID ${id} was not found`);
       }
@@ -103,11 +95,13 @@ export class JobApplicationsController {
   @UseGuards(AuthGuard)
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  async deleteJobApplication(@Req() req: Request, @Res() res: Response, @Param('id') id: string) {
+  async deleteJobApplication(
+    @Req() req: Request & { userId: string },
+    @Res() res: Response,
+    @Param('id') id: string
+  ) {
     try {
-      const { userId } = req.body;
-
-      const deletedJobApplication = await this.jobApplicationsService.deleteJobApplication(userId, id);
+      const deletedJobApplication = await this.jobApplicationsService.deleteJobApplication(req.userId, id);
       if (!deletedJobApplication) {
         throw new Error(`Job application with ID ${id} was not found`);
       }

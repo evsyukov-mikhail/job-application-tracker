@@ -29,7 +29,7 @@ export class AuthGuard implements CanActivate {
         throw new NotFoundException(`Failed to find user by username ${username} and email ${email}`);
       }
 
-      request.body['userId'] = user._id;
+      request['userId'] = user._id;
     } catch (error) {
       throw new UnauthorizedException((error as Error).message);
     }

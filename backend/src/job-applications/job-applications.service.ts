@@ -17,16 +17,16 @@ export class JobApplicationsService {
     [Status.REJECTED]: 3,
   }
 
-  findAllJobApplications(): Promise<JobApplication[]> {
-    return this.jobApplicationModel.find({});
+  findAllJobApplications(userId: string): Promise<JobApplication[]> {
+    return this.jobApplicationModel.find({ userId });
   }
 
-  findJobApplicationsByStatus(status: Status): Promise<JobApplication[]> {
-    return this.jobApplicationModel.find({ status });
+  findJobApplicationsByStatus(userId: string, status: Status): Promise<JobApplication[]> {
+    return this.jobApplicationModel.find({ status, userId });
   }
 
-  findJobApplicationsByKeywords(companyName: string, jobTitle: string): Promise<JobApplication[]> {
-    const query: any = {};
+  findJobApplicationsByKeywords(userId: string, companyName: string, jobTitle: string): Promise<JobApplication[]> {
+    const query: any = { userId };
 
     if (companyName) {
       query.companyName = { $regex: new RegExp(companyName, 'i') };
@@ -39,15 +39,19 @@ export class JobApplicationsService {
     return this.jobApplicationModel.find(query);
   }
 
-  createJobApplication(dto: JobApplicationDTO): Promise<JobApplication> {
-    const jobApplication = new this.jobApplicationModel(dto);
+  createJobApplication(userId: string, dto: JobApplicationDTO): Promise<JobApplication> {
+    const jobApplication = new this.jobApplicationModel({ ...dto, userId });
     return jobApplication.save();
   }
 
-  async updateJobApplicationStatus(id: string, status: Status): Promise<JobApplication | null> {
-    const jobApplication = await this.jobApplicationModel.findById(id);
+  async updateJobApplicationStatus(userId: string, id: string, status: Status): Promise<JobApplication | null> {
+    const jobApplication = await this.jobApplicationModel.findOne({ id });
     if (!jobApplication) {
       throw new Error(`Failed to find job application by ID ${id}`);
+    }
+
+    if (jobApplication.userId !== userId) {
+      throw new Error("User doesn't have the permission to update the status of this product");
     }
 
     if (this.statusPrecedences[status] < this.statusPrecedences[jobApplication.status]) {
@@ -57,7 +61,16 @@ export class JobApplicationsService {
     return this.jobApplicationModel.findByIdAndUpdate(id, { status }, { new: true });
   }
 
-  deleteJobApplication(id: string): Promise<JobApplication | null> {
+  async deleteJobApplication(userId: string, id: string): Promise<JobApplication | null> {
+    const jobApplication = await this.jobApplicationModel.findById(id);
+    if (!jobApplication) {
+      throw new Error(`Failed to find job application by ID ${id}`);
+    }
+
+    if (jobApplication.userId !== userId) {
+      throw new Error("User doesn't have the permission to update the status of this product");
+    }
+
     return this.jobApplicationModel.findByIdAndDelete(id);
   }
 }

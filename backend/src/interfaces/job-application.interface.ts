@@ -6,4 +6,5 @@ export interface JobApplication extends Document {
   readonly applicationDate: Date;
   readonly status: 'Applied' | 'Interviewing' | 'Offer' | 'Rejected';
   readonly notes: string;
+  readonly userId: string;
 }

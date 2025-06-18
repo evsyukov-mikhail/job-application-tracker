@@ -1,10 +1,10 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { Model } from 'mongoose';
-import { CryptoService } from 'src/crypto/crypto.service';
-import { UserDTO } from 'src/dtos/user.dto';
-import { AuthResult } from 'src/interfaces/auth-result.interface';
-import { User } from 'src/interfaces/user.interface';
+import { CryptoService } from '../crypto/crypto.service';
+import { UserDTO } from '../dtos/user.dto';
+import { AuthResult } from '../interfaces/auth-result.interface';
+import { User } from '../interfaces/user.interface';
 
 @Injectable()
 export class AuthService {

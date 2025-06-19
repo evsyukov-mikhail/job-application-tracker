@@ -10,8 +10,8 @@ export class RemindersController {
     private remindersService: RemindersService,
   ) {}
 
-  @Get()
   @UseGuards(AuthGuard)
+  @Get()
   async findAllReminders(
     @Req() req: Request & { userId: string },
     @Res() res: Response,
@@ -24,8 +24,8 @@ export class RemindersController {
     }
   }
 
-  @Post()
   @UseGuards(AuthGuard)
+  @Post()
   async createReminder(
     @Req() req: Request & { userId: string },
     @Res() res: Response,

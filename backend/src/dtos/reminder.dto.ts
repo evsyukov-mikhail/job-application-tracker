@@ -6,8 +6,7 @@ export class ReminderDTO {
   @IsNotEmpty()
   title: string;
 
-  @IsDate()
-  @IsNotEmpty()
   @Type(() => Date)
+  @IsDate()
   date: Date;
 }

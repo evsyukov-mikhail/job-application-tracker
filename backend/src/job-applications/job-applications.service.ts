@@ -40,7 +40,12 @@ export class JobApplicationsService {
   }
 
   createJobApplication(userId: string, dto: JobApplicationDTO): Promise<JobApplication> {
-    const jobApplication = new this.jobApplicationModel({ ...dto, userId });
+    console.log(dto);
+
+    const jobApplication = new this.jobApplicationModel({
+      ...dto,
+      userId,
+    });
     return jobApplication.save();
   }
 

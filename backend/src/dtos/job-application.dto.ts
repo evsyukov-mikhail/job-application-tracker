@@ -18,9 +18,8 @@ export class JobApplicationDTO {
   @IsNotEmpty()
   jobTitle: string;
 
-  @IsDate()
-  @IsNotEmpty()
   @Type(() => Date)
+  @IsDate()
   applicationDate: Date;
 
   @IsEnum(Status)

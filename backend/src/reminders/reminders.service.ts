@@ -1,4 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
+import { SchedulerRegistry } from '@nestjs/schedule';
 import { Model } from 'mongoose';
 import { ReminderDTO } from 'src/dtos/reminder.dto';
 import { Reminder } from 'src/interfaces/reminder.interface';
@@ -8,6 +9,7 @@ export class RemindersService {
   constructor(
     @Inject('REMINDER_MODEL')
     private reminderModel: Model<Reminder>,
+    private schedulerRegistry: SchedulerRegistry,
   ) {}
 
   async findAllReminders(userId: string): Promise<Reminder[]> {

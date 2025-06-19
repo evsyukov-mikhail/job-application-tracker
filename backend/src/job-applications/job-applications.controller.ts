@@ -4,16 +4,18 @@ import { JobApplicationDTO, Status } from '../dtos/job-application.dto';
 import { JobApplicationsService } from './job-applications.service';
 import { JobApplicationStatusDTO } from '../dtos/job-application-status.dto';
 import { AuthGuard } from '../auth/auth.guard';
-import { CacheInterceptor } from '@nestjs/cache-manager';
+import { CacheInterceptor, CacheKey, CacheTTL } from '@nestjs/cache-manager';
 
 @Controller('job-applications')
 @UseInterceptors(CacheInterceptor)
+@CacheTTL(50)
 export class JobApplicationsController {
 
   constructor(
     private jobApplicationsService: JobApplicationsService,
   ) {}
 
+  @CacheKey('all_job_applications')
   @UseGuards(AuthGuard)
   @Get()
   async findAllJobApplications(
@@ -40,6 +42,7 @@ export class JobApplicationsController {
     }
   }
 
+  @CacheKey('job_applications_by_filter')
   @UseGuards(AuthGuard)
   @Get('/search')
   async findJobApplicationsByKeywords(

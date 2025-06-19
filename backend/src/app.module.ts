@@ -6,7 +6,9 @@ import { CryptoService } from './crypto/crypto.service';
 import { CryptoModule } from './crypto/crypto.module';
 
 @Module({
-  imports: [JobApplicationsModule, AuthModule, CryptoModule],
+  imports: [
+    JobApplicationsModule, AuthModule, CryptoModule
+  ],
   providers: [CryptoService],
 })
 export class AppModule {}

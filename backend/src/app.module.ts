@@ -6,9 +6,17 @@ import { CryptoService } from './crypto/crypto.service';
 import { CryptoModule } from './crypto/crypto.module';
 import { CacheModule } from './cache/cache.module';
 import { RemindersModule } from './reminders/reminders.module';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
-  imports: [JobApplicationsModule, AuthModule, CryptoModule, CacheModule, RemindersModule],
+  imports: [
+    JobApplicationsModule,
+    AuthModule,
+    CryptoModule,
+    CacheModule,
+    RemindersModule,
+    ScheduleModule.forRoot(),
+  ],
   providers: [CryptoService],
 })
 export class AppModule {}

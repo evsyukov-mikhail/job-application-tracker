@@ -4,9 +4,10 @@ import { JobApplicationsModule } from './job-applications/job-applications.modul
 import { AuthModule } from './auth/auth.module';
 import { CryptoService } from './crypto/crypto.service';
 import { CryptoModule } from './crypto/crypto.module';
+import { CacheModule } from './cache/cache.module';
 
 @Module({
-  imports: [JobApplicationsModule, AuthModule, CryptoModule],
+  imports: [JobApplicationsModule, AuthModule, CryptoModule, CacheModule],
   providers: [CryptoService],
 })
 export class AppModule {}

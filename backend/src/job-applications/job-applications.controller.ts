@@ -4,8 +4,6 @@ import { JobApplicationDTO, Status } from '../dtos/job-application.dto';
 import { JobApplicationsService } from './job-applications.service';
 import { JobApplicationStatusDTO } from '../dtos/job-application-status.dto';
 import { AuthGuard } from '../auth/auth.guard';
-import { CACHE_MANAGER } from '@nestjs/cache-manager';
-import { Cache } from 'cache-manager';
 import { CacheService } from 'src/cache/cache.service';
 
 @Controller('job-applications')
@@ -24,35 +22,23 @@ export class JobApplicationsController {
     @Query('status') status: Status
   ) {
     try {
-      if (!status) {
-        const cached = await this.cacheManager.get(`${req.userId}:all_products`);
-        if (cached) {
-          return res.status(200).json(JSON.parse(cached as string));
-        }
+      const cached = status
+        ? await this.cacheManager.get(`${req.userId}:${status}`)
+        : await this.cacheManager.get(`${req.userId}:all_products`);
 
-        const jobApplications = await this.jobApplicationsService.
-          findAllJobApplications(req.userId);
-
-        await this.cacheManager.set(`${req.userId}:all_products`, JSON.stringify(jobApplications));
-
-        return res.status(200).json(jobApplications);
-      }
-
-      if (!Object.values(Status).includes(status)) {
-        throw new Error(`Failed to find status ${status}`);
-      }
-
-      const cached = await this.cacheManager.get(`${req.userId}:${status}`);
       if (cached) {
         return res.status(200).json(JSON.parse(cached as string));
       }
-      
-      const jobApplicationsByStatus = await this.jobApplicationsService.
-        findJobApplicationsByStatus(req.userId, status);
 
-      await this.cacheManager.set(`${req.userId}:all_products`, JSON.stringify(jobApplicationsByStatus));
+      const jobApplications = status
+        ? await this.jobApplicationsService.findJobApplicationsByStatus(req.userId, status)
+        : await this.jobApplicationsService.findAllJobApplications(req.userId);
 
-      return res.status(200).json(jobApplicationsByStatus);
+      const cacheKey = status ? `${req.userId}:${status}` : `${req.userId}:all_job_applications`;
+
+      await this.cacheManager.set(cacheKey, JSON.stringify(jobApplications));
+
+      return res.status(200).json(jobApplications);
     } catch (error) {
       return res.status(400).json({ message: (error as Error).message });
     }
@@ -67,7 +53,7 @@ export class JobApplicationsController {
     @Query('jobTitle') jobTitle: string
   ) {
     try {
-      const cached = await this.cacheManager.get(`${req.userId}:${companyName}-${jobTitle}`);
+      const cached = await this.cacheManager.get(`${req.userId}:keywords:${companyName}-${jobTitle}`);
       if (cached) {
         return res.status(200).json(JSON.parse(cached as string));
       }
@@ -75,7 +61,7 @@ export class JobApplicationsController {
       const jobApplications = await this.jobApplicationsService.
         findJobApplicationsByKeywords(req.userId, companyName, jobTitle);
 
-      await this.cacheManager.set(`${req.userId}:all_products`, JSON.stringify(jobApplications));
+      await this.cacheManager.set(`${req.userId}:keywords:${companyName}-${jobTitle}`, JSON.stringify(jobApplications));
 
       return res.status(200).json(jobApplications);
     } catch (error) {

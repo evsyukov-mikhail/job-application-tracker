@@ -1,11 +1,13 @@
-import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Post, Put, Query, Req, Res, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Post, Put, Query, Req, Res, UseGuards, UseInterceptors } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { JobApplicationDTO, Status } from '../dtos/job-application.dto';
 import { JobApplicationsService } from './job-applications.service';
 import { JobApplicationStatusDTO } from '../dtos/job-application-status.dto';
 import { AuthGuard } from '../auth/auth.guard';
+import { CacheInterceptor } from '@nestjs/cache-manager';
 
 @Controller('job-applications')
+@UseInterceptors(CacheInterceptor)
 export class JobApplicationsController {
 
   constructor(

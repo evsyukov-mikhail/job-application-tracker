@@ -12,6 +12,7 @@ import { CacheableMemory } from 'cacheable';
   imports: [
     JobApplicationsModule, AuthModule, CryptoModule,
     CacheModule.register({
+      isGlobal: true,
       useFactory: async () => ({
         stores: [
           new Keyv({

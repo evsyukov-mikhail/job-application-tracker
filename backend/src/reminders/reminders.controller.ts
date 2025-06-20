@@ -1,13 +1,15 @@
 import { Body, Controller, Get, Post, Req, Res, UseGuards } from '@nestjs/common';
 import { Response } from 'express';
-import { AuthGuard } from 'src/auth/auth.guard';
-import { ReminderDTO } from 'src/dtos/reminder.dto';
+import { AuthGuard } from '../auth/auth.guard';
+import { ReminderDTO } from '../dtos/reminder.dto';
 import { RemindersService } from './reminders.service';
+import { CacheService } from '../cache/cache.service';
 
 @Controller('reminders')
 export class RemindersController {
   constructor(
     private remindersService: RemindersService,
+    private cacheManager: CacheService,
   ) {}
 
   @UseGuards(AuthGuard)
@@ -17,7 +19,16 @@ export class RemindersController {
     @Res() res: Response,
   ) {
     try {
+      const cacheKey = `${req.userId}:all_reminders`;
+      const cached = await this.cacheManager.get(cacheKey);
+      if (cached) {
+        return res.status(200).json(JSON.parse(cached as string));
+      }
+
       const reminders = await this.remindersService.findAllReminders(req.userId);
+
+      await this.cacheManager.set(cacheKey, JSON.stringify(reminders));
+
       return res.status(200).json(reminders);
     } catch (error) {
       return res.status(400).json({ message: (error as Error).message });

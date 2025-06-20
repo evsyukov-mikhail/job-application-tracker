@@ -22,9 +22,8 @@ export class JobApplicationsController {
     @Query('status') status: Status
   ) {
     try {
-      const cached = status
-        ? await this.cacheManager.get(`${req.userId}:${status}`)
-        : await this.cacheManager.get(`${req.userId}:all_products`);
+      const cacheKey = status ? `${req.userId}:${status}` : `${req.userId}:all_job_applications`;
+      const cached = await this.cacheManager.get(cacheKey);
 
       if (cached) {
         return res.status(200).json(JSON.parse(cached as string));
@@ -33,8 +32,6 @@ export class JobApplicationsController {
       const jobApplications = status
         ? await this.jobApplicationsService.findJobApplicationsByStatus(req.userId, status)
         : await this.jobApplicationsService.findAllJobApplications(req.userId);
-
-      const cacheKey = status ? `${req.userId}:${status}` : `${req.userId}:all_job_applications`;
 
       await this.cacheManager.set(cacheKey, JSON.stringify(jobApplications));
 
@@ -53,7 +50,8 @@ export class JobApplicationsController {
     @Query('jobTitle') jobTitle: string
   ) {
     try {
-      const cached = await this.cacheManager.get(`${req.userId}:keywords:${companyName}-${jobTitle}`);
+      const cacheKey = `${req.userId}:keywords:${companyName}-${jobTitle}`;
+      const cached = await this.cacheManager.get(cacheKey);
       if (cached) {
         return res.status(200).json(JSON.parse(cached as string));
       }
@@ -61,7 +59,7 @@ export class JobApplicationsController {
       const jobApplications = await this.jobApplicationsService.
         findJobApplicationsByKeywords(req.userId, companyName, jobTitle);
 
-      await this.cacheManager.set(`${req.userId}:keywords:${companyName}-${jobTitle}`, JSON.stringify(jobApplications));
+      await this.cacheManager.set(cacheKey, JSON.stringify(jobApplications));
 
       return res.status(200).json(jobApplications);
     } catch (error) {

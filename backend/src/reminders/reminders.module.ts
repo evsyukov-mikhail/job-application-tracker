@@ -2,11 +2,12 @@ import { Module } from '@nestjs/common';
 import { RemindersController } from './reminders.controller';
 import { RemindersService } from './reminders.service';
 import { remindersProviders } from './reminders.providers';
-import { DatabaseModule } from 'src/database/database.module';
+import { DatabaseModule } from '../database/database.module';
+import { CacheService } from '../cache/cache.service';
 
 @Module({
   imports: [DatabaseModule],
   controllers: [RemindersController],
-  providers: [RemindersService, ...remindersProviders]
+  providers: [RemindersService, CacheService, ...remindersProviders]
 })
 export class RemindersModule {}

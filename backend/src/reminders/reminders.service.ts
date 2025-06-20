@@ -15,9 +15,6 @@ export class RemindersService {
   ) {}
 
   async findAllReminders(userId: string): Promise<Reminder[]> {
-    const jobs = this.schedulerRegistry.getCronJobs();
-    jobs.forEach((v, k, _) => console.log(`${k}: ${v.cronTime}, ${v.isActive}`));
-
     return this.reminderModel.find({ userId });
   }
 

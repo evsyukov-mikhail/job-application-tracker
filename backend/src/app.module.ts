@@ -7,6 +7,7 @@ import { CryptoModule } from './crypto/crypto.module';
 import { CacheModule } from './cache/cache.module';
 import { RemindersModule } from './reminders/reminders.module';
 import { ScheduleModule } from '@nestjs/schedule';
+import { EventEmitterModule } from '@nestjs/event-emitter';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { ScheduleModule } from '@nestjs/schedule';
     CacheModule,
     RemindersModule,
     ScheduleModule.forRoot(),
+    EventEmitterModule.forRoot(),
   ],
   providers: [CryptoService],
 })

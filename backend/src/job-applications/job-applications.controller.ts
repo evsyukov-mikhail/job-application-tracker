@@ -1,10 +1,12 @@
-import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Inject, Param, Post, Put, Query, Req, Res, UseGuards, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Inject, MessageEvent, Param, Post, Put, Query, Req, Res, Sse, UseGuards, UseInterceptors } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { JobApplicationDTO, Status } from '../dtos/job-application.dto';
 import { JobApplicationsService } from './job-applications.service';
 import { JobApplicationStatusDTO } from '../dtos/job-application-status.dto';
 import { AuthGuard } from '../auth/auth.guard';
 import { CacheService } from 'src/cache/cache.service';
+import EventEmitter2 from 'eventemitter2';
+import { Observable } from 'rxjs';
 
 @Controller('job-applications')
 export class JobApplicationsController {
@@ -12,6 +14,7 @@ export class JobApplicationsController {
   constructor(
     private cacheManager: CacheService,
     private jobApplicationsService: JobApplicationsService,
+    private eventEmitter: EventEmitter2,
   ) {}
 
   @UseGuards(AuthGuard)
@@ -95,6 +98,12 @@ export class JobApplicationsController {
     try {
       const updatedJobApplication = await this.jobApplicationsService.
         updateJobApplicationStatus(req.userId, id, dto.status);
+
+      this.eventEmitter.emit('jobApplicationStatus.updated', {
+        updatedJobApplication,
+        userId: req.userId,
+      });
+
       if (!updatedJobApplication) {
         throw new Error(`Job application with ID ${id} was not found`);
       }
@@ -121,6 +130,12 @@ export class JobApplicationsController {
     } catch (error) {
       return res.status(400).json({ message: (error as Error).message });
     }
+  }
+
+  @Sse('job-application-updates')
+  @UseGuards(AuthGuard)
+  jobApplicationUpdates(@Req() req: Request & { userId: string }): Observable<MessageEvent> {
+    return this.jobApplicationsService.getJobApplicationUpdates(req.userId);
   }
 
 }

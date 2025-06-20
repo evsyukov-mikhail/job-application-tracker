@@ -1,7 +1,9 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, MessageEvent } from '@nestjs/common';
 import { Model } from 'mongoose';
 import { JobApplicationDTO, Status } from '../dtos/job-application.dto';
 import { JobApplication } from '../interfaces/job-application.interface';
+import { map, Observable, ReplaySubject } from 'rxjs';
+import { OnEvent } from '@nestjs/event-emitter';
 
 @Injectable()
 export class JobApplicationsService {
@@ -10,12 +12,14 @@ export class JobApplicationsService {
     private jobApplicationModel: Model<JobApplication>
   ) {}
 
-  private statusPrecedences = {
+  private readonly statusPrecedences = {
     [Status.APPLIED]: 0,
     [Status.INTERVIEWING]: 1,
     [Status.OFFER]: 2,
     [Status.REJECTED]: 3,
   }
+
+  private readonly subjects = new Map<string, ReplaySubject<JobApplication>>();
 
   findAllJobApplications(userId: string): Promise<JobApplication[]> {
     return this.jobApplicationModel.find({ userId });
@@ -40,12 +44,7 @@ export class JobApplicationsService {
   }
 
   createJobApplication(userId: string, dto: JobApplicationDTO): Promise<JobApplication> {
-    console.log(dto);
-
-    const jobApplication = new this.jobApplicationModel({
-      ...dto,
-      userId,
-    });
+    const jobApplication = new this.jobApplicationModel({ ...dto, userId });
     return jobApplication.save();
   }
 
@@ -77,5 +76,29 @@ export class JobApplicationsService {
     }
 
     return this.jobApplicationModel.findByIdAndDelete(id);
+  }
+
+  getJobApplicationUpdates(userId: string): Observable<MessageEvent> {
+    if (!this.subjects.has(userId)) {
+      const newSubject = new ReplaySubject<JobApplication>(5);
+      this.subjects.set(userId, newSubject);
+    }
+
+    const subject = this.subjects.get(userId)!;
+
+    return subject.asObservable().pipe(
+      map(payload => ({ data: payload }))
+    );
+  }
+
+  @OnEvent('jobApplicationStatus.updated')
+  handleJobApplicationStatusUpdate(payload: { updatedJobApplication: JobApplication, userId: string }) {
+    const subject = this.subjects.get(payload.userId);
+
+    if (subject) {
+      subject.next(payload.updatedJobApplication);
+    } else {
+      console.warn(`Failed to send notification to user that is not connected: userId=${payload.userId}`);
+    }
   }
 }

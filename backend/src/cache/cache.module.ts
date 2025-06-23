@@ -1,9 +1,11 @@
 import { createKeyv } from '@keyv/redis';
 import { Module } from '@nestjs/common';
 import { Cacheable } from 'cacheable';
+import { CacheService } from './cache.service';
 
 @Module({
   providers: [
+    CacheService,
     {
       provide: 'CACHE_INSTANCE',
       useFactory: () => {

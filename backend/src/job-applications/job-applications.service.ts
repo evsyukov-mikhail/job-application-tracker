@@ -1,5 +1,5 @@
 import { Inject, Injectable, MessageEvent } from '@nestjs/common';
-import { Model } from 'mongoose';
+import mongoose, { Model } from 'mongoose';
 import { JobApplicationDTO, Status } from '../dtos/job-application.dto';
 import { JobApplication } from '../interfaces/job-application.interface';
 import { map, Observable, ReplaySubject } from 'rxjs';
@@ -50,12 +50,16 @@ export class JobApplicationsService {
   }
 
   async updateJobApplicationStatus(userId: string, id: string, status: Status): Promise<JobApplication | null> {
-    const jobApplication = await this.jobApplicationModel.findOne({ id });
+    const jobApplication = await this.jobApplicationModel.findById(id);
     if (!jobApplication) {
       throw new Error(`Failed to find job application by ID ${id}`);
     }
 
-    if (jobApplication.userId !== userId) {
+    console.log(jobApplication, userId, new mongoose.Types.ObjectId(jobApplication.userId).equals(userId));
+
+    const isJobApplicationOfUser = new mongoose.Types.ObjectId(jobApplication.userId).equals(userId);
+
+    if (!isJobApplicationOfUser) {
       throw new Error("User doesn't have the permission to update the status of this product");
     }
 
@@ -64,8 +68,8 @@ export class JobApplicationsService {
     }
 
     this.eventEmitter.emit('jobApplicationStatus.updated', {
-      updatedJobApplication: { ...jobApplication, status },
-      userId,
+      updatedJobApplication: { id: jobApplication._id, status },
+      userId: String(userId),
     });
 
     return this.jobApplicationModel.findByIdAndUpdate(id, { status }, { new: true });
@@ -85,12 +89,18 @@ export class JobApplicationsService {
   }
 
   getJobApplicationUpdates(userId: string): Observable<MessageEvent> {
+    console.log(userId, this.subjects);
+
     if (!this.subjects.has(userId)) {
+      console.log('Failed to find subject')
+
       const newSubject = new ReplaySubject<JobApplication>(5);
       this.subjects.set(userId, newSubject);
     }
 
     const subject = this.subjects.get(userId)!;
+
+    console.log(subject);
 
     return subject.asObservable().pipe(
       map(payload => ({ data: payload }))
@@ -101,10 +111,13 @@ export class JobApplicationsService {
   handleJobApplicationStatusUpdate(payload: { updatedJobApplication: JobApplication, userId: string }) {
     const subject = this.subjects.get(payload.userId);
 
-    if (subject) {
-      subject.next(payload.updatedJobApplication);
-    } else {
-      console.warn(`Failed to send notification to user that is not connected: userId=${payload.userId}`);
+    if (!subject) {
+      console.log('Created subject');
+
+      const newSubject = new ReplaySubject<JobApplication>(5);
+      this.subjects.set(String(payload.userId), newSubject);
     }
+
+    subject?.next(payload.updatedJobApplication);
   }
 }

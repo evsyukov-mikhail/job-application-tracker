@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Inject, MessageEvent, Param, Post, Put, Query, Req, Res, Sse, UseGuards, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, HttpStatus, MessageEvent, Param, Post, Put, Query, Req, Res, Sse, UseGuards } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { JobApplicationDTO, Status } from '../dtos/job-application.dto';
 import { JobApplicationsService } from './job-applications.service';
@@ -12,9 +12,8 @@ import { Observable } from 'rxjs';
 export class JobApplicationsController {
 
   constructor(
-    private cacheManager: CacheService,
-    private jobApplicationsService: JobApplicationsService,
-    private eventEmitter: EventEmitter2,
+    private readonly cache: CacheService,
+    private readonly jobApplicationsService: JobApplicationsService,
   ) {}
 
   @UseGuards(AuthGuard)
@@ -26,7 +25,7 @@ export class JobApplicationsController {
   ) {
     try {
       const cacheKey = status ? `${req.userId}:${status}` : `${req.userId}:all_job_applications`;
-      const cached = await this.cacheManager.get(cacheKey);
+      const cached = await this.cache.get(cacheKey);
 
       if (cached) {
         return res.status(200).json(JSON.parse(cached as string));
@@ -36,7 +35,7 @@ export class JobApplicationsController {
         ? await this.jobApplicationsService.findJobApplicationsByStatus(req.userId, status)
         : await this.jobApplicationsService.findAllJobApplications(req.userId);
 
-      await this.cacheManager.set(cacheKey, JSON.stringify(jobApplications));
+      await this.cache.set(cacheKey, JSON.stringify(jobApplications));
 
       return res.status(200).json(jobApplications);
     } catch (error) {
@@ -54,7 +53,7 @@ export class JobApplicationsController {
   ) {
     try {
       const cacheKey = `${req.userId}:keywords:${companyName}-${jobTitle}`;
-      const cached = await this.cacheManager.get(cacheKey);
+      const cached = await this.cache.get(cacheKey);
       if (cached) {
         return res.status(200).json(JSON.parse(cached as string));
       }
@@ -62,7 +61,7 @@ export class JobApplicationsController {
       const jobApplications = await this.jobApplicationsService.
         findJobApplicationsByKeywords(req.userId, companyName, jobTitle);
 
-      await this.cacheManager.set(cacheKey, JSON.stringify(jobApplications));
+      await this.cache.set(cacheKey, JSON.stringify(jobApplications));
 
       return res.status(200).json(jobApplications);
     } catch (error) {
@@ -98,11 +97,6 @@ export class JobApplicationsController {
     try {
       const updatedJobApplication = await this.jobApplicationsService.
         updateJobApplicationStatus(req.userId, id, dto.status);
-
-      this.eventEmitter.emit('jobApplicationStatus.updated', {
-        updatedJobApplication,
-        userId: req.userId,
-      });
 
       if (!updatedJobApplication) {
         throw new Error(`Job application with ID ${id} was not found`);

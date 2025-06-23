@@ -9,7 +9,7 @@ import { CacheService } from '../cache/cache.service';
 export class RemindersController {
   constructor(
     private remindersService: RemindersService,
-    private cacheManager: CacheService,
+    private cache: CacheService,
   ) {}
 
   @UseGuards(AuthGuard)
@@ -20,14 +20,14 @@ export class RemindersController {
   ) {
     try {
       const cacheKey = `${req.userId}:all_reminders`;
-      const cached = await this.cacheManager.get(cacheKey);
+      const cached = await this.cache.get(cacheKey);
       if (cached) {
         return res.status(200).json(JSON.parse(cached as string));
       }
 
       const reminders = await this.remindersService.findAllReminders(req.userId);
 
-      await this.cacheManager.set(cacheKey, JSON.stringify(reminders));
+      await this.cache.set(cacheKey, JSON.stringify(reminders));
 
       return res.status(200).json(reminders);
     } catch (error) {

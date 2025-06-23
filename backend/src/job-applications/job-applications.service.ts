@@ -3,13 +3,14 @@ import { Model } from 'mongoose';
 import { JobApplicationDTO, Status } from '../dtos/job-application.dto';
 import { JobApplication } from '../interfaces/job-application.interface';
 import { map, Observable, ReplaySubject } from 'rxjs';
-import { OnEvent } from '@nestjs/event-emitter';
+import { EventEmitter2, OnEvent } from '@nestjs/event-emitter';
 
 @Injectable()
 export class JobApplicationsService {
   constructor(
     @Inject('JOB_APPLICATION_MODEL')
-    private jobApplicationModel: Model<JobApplication>
+    private jobApplicationModel: Model<JobApplication>,
+    private readonly eventEmitter: EventEmitter2,
   ) {}
 
   private readonly statusPrecedences = {
@@ -61,6 +62,11 @@ export class JobApplicationsService {
     if (this.statusPrecedences[status] < this.statusPrecedences[jobApplication.status]) {
       throw new Error(`Failed to update job application status: ${status} has lower precendence than ${jobApplication.status}`);
     }
+
+    this.eventEmitter.emit('jobApplicationStatus.updated', {
+      updatedJobApplication: { ...jobApplication, status },
+      userId,
+    });
 
     return this.jobApplicationModel.findByIdAndUpdate(id, { status }, { new: true });
   }

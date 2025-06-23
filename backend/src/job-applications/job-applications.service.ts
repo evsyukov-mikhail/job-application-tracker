@@ -69,7 +69,7 @@ export class JobApplicationsService {
 
     this.eventEmitter.emit('jobApplicationStatus.updated', {
       updatedJobApplication: { id: jobApplication._id, status },
-      userId: String(userId),
+      userId,
     });
 
     return this.jobApplicationModel.findByIdAndUpdate(id, { status }, { new: true });
@@ -81,7 +81,7 @@ export class JobApplicationsService {
       throw new Error(`Failed to find job application by ID ${id}`);
     }
 
-    if (jobApplication.userId !== userId) {
+    if (!jobApplication.userId.equals(userId)) {
       throw new Error("User doesn't have the permission to update the status of this product");
     }
 
@@ -89,18 +89,12 @@ export class JobApplicationsService {
   }
 
   getJobApplicationUpdates(userId: string): Observable<MessageEvent> {
-    console.log(userId, this.subjects);
-
     if (!this.subjects.has(userId)) {
-      console.log('Failed to find subject')
-
       const newSubject = new ReplaySubject<JobApplication>(5);
       this.subjects.set(userId, newSubject);
     }
 
     const subject = this.subjects.get(userId)!;
-
-    console.log(subject);
 
     return subject.asObservable().pipe(
       map(payload => ({ data: payload }))
@@ -112,10 +106,8 @@ export class JobApplicationsService {
     const subject = this.subjects.get(payload.userId);
 
     if (!subject) {
-      console.log('Created subject');
-
       const newSubject = new ReplaySubject<JobApplication>(5);
-      this.subjects.set(String(payload.userId), newSubject);
+      this.subjects.set(payload.userId, newSubject);
     }
 
     subject?.next(payload.updatedJobApplication);

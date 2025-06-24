@@ -4,8 +4,7 @@ import { MicroserviceOptions, Transport } from '@nestjs/microservices';
 import { ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule, { snapshot: true });
-  app.enableCors();
+  const app = await NestFactory.create(AppModule, { snapshot: true, cors: true });
   app.useGlobalPipes(new ValidationPipe({
     transform: true,
   }));

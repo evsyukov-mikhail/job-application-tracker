@@ -24,7 +24,7 @@ export class RemindersService {
       service: 'gmail',
       auth: {
         type: 'OAuth2',
-        user: process.env.SERVICE_EMAIL,
+        user: process.env.EMAIL,
         clientId: process.env.GOOGLE_CLIENT_ID,
         clientSecret: process.env.GOOGLE_CLIENT_SECRET,
         refreshToken: process.env.GOOGLE_REFRESH_TOKEN,
@@ -40,22 +40,12 @@ export class RemindersService {
     const job = new CronJob(dto.date, async () => {
       const receiverEmail = await this.getUserEmailById(userId);
 
-      console.log({
-        from: process.env.SERVICE_EMAIL,
+      await this.transporter.sendMail({
+        from: process.env.EMAIL,
         to: receiverEmail,
         subject: 'Reminder on your job application',
         text: `Hi. You have been reminded on your schedule "${dto.title}" at ${dto.date.toDateString()}`,
       });
-
-      const info = await this.transporter.sendMail({
-        from: process.env.SERVICE_EMAIL,
-        to: receiverEmail,
-        subject: 'Reminder on your job application',
-        text: `Hi. You have been reminded on your schedule "${dto.title}" at ${dto.date.toDateString()}`,
-      });
-
-      // For development only
-      console.log(`Message preview URL: ${nodemailer.getTestMessageUrl(info)}`);
     });
 
     const jobName = `${userId}:${Date.now().toString()}`;
@@ -63,10 +53,7 @@ export class RemindersService {
     this.schedulerRegistry.addCronJob(jobName, job as any);
     job.start();
 
-    const reminder = new this.reminderModel({
-      ...dto,
-      userId
-    });
+    const reminder = new this.reminderModel({ ...dto, userId });
     return reminder.save();
   }
 

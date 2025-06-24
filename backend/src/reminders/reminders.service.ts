@@ -20,16 +20,16 @@ export class RemindersService {
     private userModel: Model<User>,
     private schedulerRegistry: SchedulerRegistry,
   ) {
-    const transporter = nodemailer.createTransport({
+    this.transporter = nodemailer.createTransport({
       service: 'gmail',
       auth: {
         type: 'OAuth2',
         user: process.env.SERVICE_EMAIL,
-        clientId: process.env.OAUTH_CLIENT_ID,
-        clientSecret: process.env.OAUTH_CLIENT_SECRET,
-        refreshToken: process.env.OAUTH_REFRESH_TOKEN,
+        clientId: process.env.GOOGLE_CLIENT_ID,
+        clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+        refreshToken: process.env.GOOGLE_REFRESH_TOKEN,
       }
-    })
+    });
   }
 
   async findAllReminders(userId: string): Promise<Reminder[]> {
@@ -39,6 +39,13 @@ export class RemindersService {
   async createReminder(userId: string, dto: ReminderDTO): Promise<Reminder> {
     const job = new CronJob(dto.date, async () => {
       const receiverEmail = await this.getUserEmailById(userId);
+
+      console.log({
+        from: process.env.SERVICE_EMAIL,
+        to: receiverEmail,
+        subject: 'Reminder on your job application',
+        text: `Hi. You have been reminded on your schedule "${dto.title}" at ${dto.date.toDateString()}`,
+      });
 
       const info = await this.transporter.sendMail({
         from: process.env.SERVICE_EMAIL,

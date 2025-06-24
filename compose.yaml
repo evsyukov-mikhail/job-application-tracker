@@ -13,6 +13,20 @@ services:
           action: rebuild
           target: /usr/src/app
 
+  frontend:
+    build: ./frontend
+    ports:
+      - 5173:5173
+    networks:
+      - main
+    env_file:
+      - ./backend/.env
+    develop:
+      watch:
+        - path: ./frontend
+          action: rebuild
+          target: /app
+
   redis:
     container_name: job-appl-tracker-redis
     image: redis:8.0.2-alpine

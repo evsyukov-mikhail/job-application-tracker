@@ -1,5 +1,6 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useState, type FormEvent } from "react";
+import type { AuthResult } from "~/interfaces/auth-result.interface";
 import type { User } from "~/interfaces/user.interface";
 
 export default function Signup() {
@@ -11,7 +12,7 @@ export default function Signup() {
   });
 
   const mutation = useMutation({
-    mutationFn: (body: User) =>
+    mutationFn: (body: User): Promise<AuthResult> =>
       fetch(`${process.env.SERVER_HOST}/auth/signup`, { method: 'POST', body: JSON.stringify(body) }).
         then(res => res.json()),
   });
@@ -19,7 +20,9 @@ export default function Signup() {
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    mutation.mutate({ ...formData });
+    mutation.mutate({ ...formData }, {
+      onSuccess: (data) => console.log(data),
+    });
   }
 
   return (

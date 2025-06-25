@@ -1,5 +1,6 @@
 import { useMutation } from "@tanstack/react-query";
 import { useState, type FormEvent } from "react";
+import { FormField } from "~/atoms/form-field";
 import type { AuthResult } from "~/interfaces/auth-result.interface";
 import type { User } from "~/interfaces/user.interface";
 
@@ -34,35 +35,29 @@ export default function Signup() {
         <h2>Sign Up</h2>
         <label className="block text-sm font-medium text-gray-700">
           Username
-          <input
+          <FormField
             type="text"
-            className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm transition duration-150 ease-in-out"
             value={formData.username}
             onChange={event => setFormData(data => ({ ...data, username: event.target.value }))}
             placeholder="Username"
-            required
           />
         </label>
         <label className="block text-sm font-medium text-gray-700">
           Email
-          <input
+          <FormField
             type="email"
-            className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm transition duration-150 ease-in-out"
             value={formData.email}
             onChange={event => setFormData(data => ({ ...data, email: event.target.value }))}
             placeholder="Email"
-            required
           />
         </label>
         <label className="block text-sm font-medium text-gray-700">
           Password
-          <input
+          <FormField
             type="password"
-            className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm transition duration-150 ease-in-out"
-            value={formData.password}
+            value={formData.email}
             onChange={event => setFormData(data => ({ ...data, password: event.target.value }))}
             placeholder="Password"
-            required
           />
         </label>
         {mutation.isPending && <div>Loading...</div>}

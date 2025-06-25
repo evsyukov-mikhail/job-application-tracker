@@ -12,7 +12,7 @@ interface Props {
 
 export const AuthForm = ({ formState: [formData, setFormData], ...props }: Props) => (
   <form onSubmit={props.handleSubmit}>
-    <h2>Sign Up</h2>
+    <h2 className="text-center">Sign Up</h2>
     <label className="block text-sm font-medium text-gray-700">
       Username
       <FormField
@@ -44,7 +44,7 @@ export const AuthForm = ({ formState: [formData, setFormData], ...props }: Props
     {props.isError && <div>An error occurred: {props.error?.message}</div>}
     <input
       type="submit"
-      className="cursor-pointer"
+      className="mt-1 w-full border border-gray-300 cursor-pointer sm:text-sm"
       value="Sign Up"
     />
   </form>

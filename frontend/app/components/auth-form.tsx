@@ -35,7 +35,7 @@ export const AuthForm = ({ formState: [formData, setFormData], ...props }: Props
       Password
       <FormField
         type="password"
-        value={formData.email}
+        value={formData.password}
         onChange={event => setFormData(data => ({ ...data, password: event.target.value }))}
         placeholder="Password"
       />

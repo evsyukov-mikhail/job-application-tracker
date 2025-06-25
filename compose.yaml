@@ -16,11 +16,11 @@ services:
   frontend:
     build: ./frontend
     ports:
-      - 5173:5173
+      - 5173:3000
     networks:
       - main
     env_file:
-      - ./backend/.env
+      - ./frontend/.env
     develop:
       watch:
         - path: ./frontend

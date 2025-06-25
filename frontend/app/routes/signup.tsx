@@ -1,5 +1,6 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useState, type FormEvent } from "react";
+import type { User } from "~/interfaces/user.interface";
 
 export default function Signup() {
 
@@ -10,7 +11,7 @@ export default function Signup() {
   });
 
   const mutation = useMutation({
-    mutationFn: (body: { username: string, email: string, password: string }) =>
+    mutationFn: (body: User) =>
       fetch(`${process.env.SERVER_HOST}/auth/signup`, { method: 'POST', body: JSON.stringify(body) }).
         then(res => res.json()),
   });

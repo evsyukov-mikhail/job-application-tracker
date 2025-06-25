@@ -7,7 +7,7 @@ interface Props {
   readonly formState: [User, Dispatch<SetStateAction<User>>];
   readonly isLoading: boolean;
   readonly isError: boolean;
-  readonly error: Error;
+  readonly error: Error | null;
 }
 
 export const AuthForm = ({ formState: [formData, setFormData], ...props }: Props) => (
@@ -41,7 +41,7 @@ export const AuthForm = ({ formState: [formData, setFormData], ...props }: Props
       />
     </label>
     {props.isLoading && <div>Loading...</div>}
-    {props.isError && <div>An error occurred: {props.error.message}</div>}
+    {props.isError && <div>An error occurred: {props.error?.message}</div>}
     <input
       type="submit"
       className="cursor-pointer"

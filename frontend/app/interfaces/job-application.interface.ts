@@ -1,7 +1,8 @@
 export interface JobApplication {
+  readonly _id: string;
   readonly companyName: string;
   readonly jobTitle: string;
   readonly applicationDate: string;
-  readonly status: 'Applied' | 'Interviewing' | 'Offer' | 'Rejected';
+  readonly status: string;
   readonly notes: string;
 }

@@ -1,7 +1,8 @@
 import { useUserStore } from "~/stores/user.store";
 import type { Route } from "./+types/home";
 import { useQuery } from "@tanstack/react-query";
-import type { JobApplication } from "~/interfaces/job-application.interface";
+import type { JobApplication as IJobApplication } from "~/interfaces/job-application.interface";
+import { JobApplication } from "~/atoms/job-application";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -14,7 +15,7 @@ export default function Home() {
 
   const { user } = useUserStore();
 
-  const getJobApplications = (): Promise<JobApplication[]> => {
+  const getJobApplications = (): Promise<IJobApplication[]> => {
     const headers = { 'Authorization': `Bearer ${user.token}` };
 
     return fetch(`${import.meta.env.VITE_SERVER_HOST}/job-applications`, { headers }).then(res => res.json());
@@ -26,8 +27,11 @@ export default function Home() {
   });
 
   return (
-    <div>
-      <p>{user.username}, {user.email}, {user.token}</p>
-    </div>
+    <main className="p-4">
+      <h2>Job Applications</h2>
+      <div className="grid grid-cols-4 gap-4">
+        {query.data?.map(jobApplication => <JobApplication jobApplication={jobApplication} />)}
+      </div>
+    </main>
   );
 }

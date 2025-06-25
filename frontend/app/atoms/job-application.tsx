@@ -16,11 +16,14 @@ export const JobApplication = (props: Props) => {
 
   const statusOptions = ['Applied', 'Interviewing', 'Offer', 'Rejected'];
 
-  const headers = { 'Authorization': `Bearer ${user.token}` }
+  const headers = { 'Authorization': `Bearer ${user.token}`, 'Content-Type': 'application/json' };
   const mutation = useMutation({
     mutationFn: (status: string) =>
-      fetch(`${import.meta.env.SERVER_HOST}/job-applications/${_id}`, { headers, body: JSON.stringify({ status }) }).
-        then(res => res.json())
+      fetch(`${import.meta.env.VITE_SERVER_HOST}/job-applications/${_id}`, {
+        method: 'PUT', headers, body: JSON.stringify({ status })
+      }).
+        then(res => res.json()).
+        then(json => { if (json.message) throw new Error(json.message) }),
   })
 
   const handleStatusChange = (event: ChangeEvent<HTMLSelectElement>) => {
@@ -28,7 +31,9 @@ export const JobApplication = (props: Props) => {
   }
 
   const handleSaveStatus = () => {
-    mutation.mutate(status)
+    mutation.mutate(status, {
+      onError: () => console.log('Got an error'),
+    })
   }
 
   return (

@@ -29,8 +29,8 @@ export default function Home() {
   return (
     <main className="p-4">
       <h2>Job Applications</h2>
-      <div className="grid grid-cols-4 gap-4">
-        {query.data?.map(jobApplication => <JobApplication jobApplication={jobApplication} />)}
+      <div className="flex flex-wrap">
+        {query.data?.map(jobApplication => <JobApplication key={jobApplication._id} jobApplication={jobApplication} />)}
       </div>
     </main>
   );

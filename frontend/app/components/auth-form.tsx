@@ -3,6 +3,7 @@ import { FormField } from "~/atoms/form-field";
 import type { User } from "~/interfaces/user.interface";
 
 interface Props {
+  readonly title: string;
   readonly handleSubmit: (event: FormEvent<HTMLFormElement>) => void;
   readonly formState: [User, Dispatch<SetStateAction<User>>];
   readonly isLoading: boolean;
@@ -12,7 +13,7 @@ interface Props {
 
 export const AuthForm = ({ formState: [formData, setFormData], ...props }: Props) => (
   <form onSubmit={props.handleSubmit}>
-    <h2 className="text-center">Sign Up</h2>
+    <h2 className="text-center">{props.title}</h2>
     <label className="block text-sm font-medium text-gray-700">
       Username
       <FormField
@@ -45,7 +46,7 @@ export const AuthForm = ({ formState: [formData, setFormData], ...props }: Props
     <input
       type="submit"
       className="mt-1 w-full border border-gray-300 cursor-pointer sm:text-sm"
-      value="Sign Up"
+      value="Submit"
     />
   </form>
 )

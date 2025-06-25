@@ -1,3 +1,4 @@
+import { useUserStore } from "~/stores/user.store";
 import type { Route } from "./+types/home";
 
 export function meta({}: Route.MetaArgs) {
@@ -8,5 +9,12 @@ export function meta({}: Route.MetaArgs) {
 }
 
 export default function Home() {
-  return <>Home</>;
+
+  const { user } = useUserStore();
+
+  return (
+    <div>
+      <p>{user.username}, {user.email}, {user.token}</p>
+    </div>
+  );
 }

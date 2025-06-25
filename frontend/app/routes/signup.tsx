@@ -1,11 +1,16 @@
 import { useMutation } from "@tanstack/react-query";
 import { useState, type FormEvent } from "react";
-import { FormField } from "~/atoms/form-field";
+import { redirect, useNavigate } from "react-router-dom";
 import { AuthForm } from "~/components/auth-form";
 import type { AuthResult } from "~/interfaces/auth-result.interface";
 import type { User } from "~/interfaces/user.interface";
+import { useUserStore } from "~/stores/user.store";
 
 export default function Signup() {
+
+  const navigate = useNavigate();
+
+  const { setUser } = useUserStore();
 
   const [formData, setFormData] = useState({
     username: '',
@@ -25,14 +30,20 @@ export default function Signup() {
     event.preventDefault();
 
     mutation.mutate({ ...formData }, {
-      onSuccess: (data) => console.log(data),
+      onSuccess: (data) => {
+        setUser(data);
+        navigate('/');
+      },
       onError: (error) => console.error(error),
     });
+
+    navigate('/');
   }
 
   return (
     <main className="min-h-screen flex items-center justify-center bg-gray-100 p-4">
       <AuthForm
+        title="Sign Up"
         handleSubmit={handleSubmit}
         formState={[formData, setFormData]}
         isLoading={mutation.isPending}

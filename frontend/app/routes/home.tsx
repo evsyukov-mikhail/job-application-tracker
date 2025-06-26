@@ -4,7 +4,8 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import type { JobApplication as IJobApplication } from "~/interfaces/job-application.interface";
 import { JobApplication } from "~/atoms/job-application";
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router";
+import { useLocation, useNavigate } from "react-router";
+import { Search } from "~/components/search";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -15,6 +16,7 @@ export function meta({}: Route.MetaArgs) {
 
 export default function Home() {
   const navigate = useNavigate();
+
   const { user, setUser } = useUserStore();
 
   const [searchParams, setSearchParams] = useState({
@@ -81,25 +83,10 @@ export default function Home() {
 
   return (
     <main className="p-4">
-      <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2 mb-4">
-      <input
-        type="text"
-        placeholder="Search Job Title..."
-        value={searchParams.companyName}
-        onChange={event => setSearchParams(state => ({ ...state, companyName: event.target.value }))}
-        className="flex-1 px-3 py-1.5 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm"
-        aria-label="Search job title"
+      <Search
+        searchParamsState={[searchParams, setSearchParams]}
+        onSearch={() => jobApplicationQuery.refetch()}
       />
-      <input
-        type="text"
-        placeholder="Search Company Name..."
-        value={searchParams.jobTitle}
-        onChange={event => setSearchParams(state => ({ ...state, jobTitle: event.target.value }))}
-        className="flex-1 px-3 py-1.5 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm"
-        aria-label="Search company name"
-      />
-    </div>
-      <h2 className="text-2xl font-bold mb-1">Job Applications</h2>
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4">
         {jobApplicationQuery.data?.map(jobApplication =>
           <JobApplication

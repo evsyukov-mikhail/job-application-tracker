@@ -1,7 +1,5 @@
-import { useMutation } from "@tanstack/react-query";
 import { useState, type ChangeEvent } from "react";
 import type { JobApplication as IJobApplication } from "~/interfaces/job-application.interface"
-import { useUserStore } from "~/stores/user.store";
 
 interface Props {
   jobApplication: IJobApplication;
@@ -12,7 +10,6 @@ interface Props {
 }
 
 export const JobApplication = (props: Props) => {
-
   const [status, setStatus] = useState(props.jobApplication.status);
   const { companyName, jobTitle, applicationDate, notes } = props.jobApplication;
 
@@ -56,7 +53,7 @@ export const JobApplication = (props: Props) => {
 
         <div className="flex justify-end pt-2">
           <button
-            onClick={() => {}}
+            onClick={props.onDelete}
             className="px-3 py-1.5 bg-red-600 text-white rounded-md shadow hover:bg-red-700 text-sm"
             aria-label="Delete job application"
           >

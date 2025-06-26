@@ -12,7 +12,6 @@ export function meta({}: Route.MetaArgs) {
 }
 
 export default function Home() {
-
   const { user } = useUserStore();
 
   const getJobApplications = (): Promise<IJobApplication[]> => {
@@ -34,15 +33,15 @@ export default function Home() {
         method: 'PUT', headers, body: JSON.stringify({ status })
       }).
         then(res => res.json()).
-        then(json => { if (json.message) throw new Error(json.message) }),
+        then(json => { if (json.error) throw new Error(json.error) }),
   });
 
   const deleteMutation = useMutation({
     mutationFn: (id: string) =>
       fetch(`${import.meta.env.VITE_SERVER_HOST}/job-applications/${id}`, { method: 'DELETE', headers })
         .then(res => res.json())
-        .then(json => { if (json.message) throw new Error(json.message) })
-  })
+        .then(json => { if (json.error) throw new Error(json.error) }),
+  });
 
   return (
     <main className="p-4">
@@ -53,7 +52,7 @@ export default function Home() {
             key={jobApplication._id}
             jobApplication={jobApplication}
             onSaveStatus={(status: string) => updateStatusMutation.mutate({ id: jobApplication._id, status })}
-            onDelete={() => {}}
+            onDelete={() => deleteMutation.mutate(jobApplication._id)}
             isError={updateStatusMutation.isError}
             error={updateStatusMutation.error}
           />

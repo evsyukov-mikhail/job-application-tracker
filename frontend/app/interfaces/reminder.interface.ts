@@ -1,4 +1,5 @@
 export interface Reminder {
-  title: string;
-  date: Date;
+  readonly _id: string;
+  readonly title: string;
+  readonly date: Date;
 }

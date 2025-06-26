@@ -31,7 +31,11 @@ export default function Home() {
     queryFn: () => fetch(`${import.meta.env.VITE_SERVER_HOST}/job-applications${searchQuery}`, {
       headers: { 'Authorization': `Bearer ${user.token}` },
     }).
-      then(res => res.json() as Promise<IJobApplication[]>),
+      then(res => res.json()).
+      then(json => {
+        if (json.error) throw new Error(json.error)
+        else return json as IJobApplication[] 
+      }),
     enabled: false,
   });
 

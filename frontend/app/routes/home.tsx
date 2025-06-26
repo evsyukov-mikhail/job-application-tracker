@@ -3,7 +3,7 @@ import type { Route } from "./+types/home";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import type { JobApplication as IJobApplication } from "~/interfaces/job-application.interface";
 import { JobApplication } from "~/atoms/job-application";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 
 export function meta({}: Route.MetaArgs) {
@@ -17,15 +17,19 @@ export default function Home() {
   const navigate = useNavigate();
   const { user, setUser } = useUserStore();
 
-  const getJobApplications = (): Promise<IJobApplication[]> => {
-    const headers = { 'Authorization': `Bearer ${user.token}` };
+  const [searchParams, setSearchParams] = useState({
+    companyName: '',
+    jobTitle: '',
+  });
 
-    return fetch(`${import.meta.env.VITE_SERVER_HOST}/job-applications`, { headers }).then(res => res.json());
-  }
+  const [searchQuery, setSearchQuery] = useState('');
 
-  const query = useQuery({
+  const jobApplicationQuery = useQuery({
     queryKey: ['jobApplications'],
-    queryFn: getJobApplications,
+    queryFn: () => fetch(`${import.meta.env.VITE_SERVER_HOST}/job-applications${searchQuery}`, {
+      headers: { 'Authorization': `Bearer ${user.token}` },
+    }).
+      then(res => res.json() as Promise<IJobApplication[]>),
     enabled: false,
   });
 
@@ -57,14 +61,47 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
-    if (user && user.token) query.refetch();
+    if (user && user.token) jobApplicationQuery.refetch();
   }, [user]);
+
+  useEffect(() => {
+    const { companyName, jobTitle } = searchParams;
+    const queryParams = [];
+
+    if (companyName) {
+      queryParams.push(`companyName=${companyName}`);
+    }
+
+    if (jobTitle) {
+      queryParams.push(`jobTitle=${jobTitle}`);
+    }
+
+    setSearchQuery(queryParams.length ? `?${queryParams.join('&')}` : '');
+  }, [searchParams]);
 
   return (
     <main className="p-4">
+      <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2 mb-4">
+      <input
+        type="text"
+        placeholder="Search Job Title..."
+        value={searchParams.companyName}
+        onChange={event => setSearchParams(state => ({ ...state, companyName: event.target.value }))}
+        className="flex-1 px-3 py-1.5 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm"
+        aria-label="Search job title"
+      />
+      <input
+        type="text"
+        placeholder="Search Company Name..."
+        value={searchParams.jobTitle}
+        onChange={event => setSearchParams(state => ({ ...state, jobTitle: event.target.value }))}
+        className="flex-1 px-3 py-1.5 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm"
+        aria-label="Search company name"
+      />
+    </div>
       <h2 className="text-2xl font-bold mb-1">Job Applications</h2>
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4">
-        {query.data?.map(jobApplication =>
+        {jobApplicationQuery.data?.map(jobApplication =>
           <JobApplication
             key={jobApplication._id}
             jobApplication={jobApplication}

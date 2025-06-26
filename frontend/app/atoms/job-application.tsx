@@ -51,7 +51,7 @@ export const JobApplication = (props: Props) => {
           </div>
         </div>
 
-        <div className="flex justify-end pt-2">
+        <div className="flex justify-end pt-2 gap-2">
           <button
             onClick={props.onDelete}
             className="px-3 py-1.5 bg-red-600 text-white rounded-md shadow hover:bg-red-700 text-sm"

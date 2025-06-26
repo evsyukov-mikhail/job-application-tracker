@@ -3,6 +3,8 @@ import type { Route } from "./+types/home";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import type { JobApplication as IJobApplication } from "~/interfaces/job-application.interface";
 import { JobApplication } from "~/atoms/job-application";
+import { useEffect } from "react";
+import { useNavigate } from "react-router";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -12,7 +14,8 @@ export function meta({}: Route.MetaArgs) {
 }
 
 export default function Home() {
-  const { user } = useUserStore();
+  const navigate = useNavigate();
+  const { user, setUser } = useUserStore();
 
   const getJobApplications = (): Promise<IJobApplication[]> => {
     const headers = { 'Authorization': `Bearer ${user.token}` };
@@ -22,7 +25,8 @@ export default function Home() {
 
   const query = useQuery({
     queryKey: ['jobApplications'],
-    queryFn: getJobApplications
+    queryFn: getJobApplications,
+    enabled: false,
   });
 
   const headers = { 'Authorization': `Bearer ${user.token}`, 'Content-Type': 'application/json' };
@@ -42,6 +46,19 @@ export default function Home() {
         .then(res => res.json())
         .then(json => { if (json.error) throw new Error(json.error) }),
   });
+
+  useEffect(() => {
+    const user = sessionStorage.getItem('user');
+    if (!user) {
+      navigate('/login');
+    }
+
+    setUser(JSON.parse(user!));
+  }, []);
+
+  useEffect(() => {
+    if (user && user.token) query.refetch();
+  }, [user]);
 
   return (
     <main className="p-4">

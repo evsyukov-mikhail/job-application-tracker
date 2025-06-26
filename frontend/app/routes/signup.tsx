@@ -32,6 +32,8 @@ export default function Signup() {
     mutation.mutate({ ...formData }, {
       onSuccess: (data) => {
         setUser(data);
+        sessionStorage.setItem('user', JSON.stringify(data));
+        
         navigate('/');
       },
       onError: (error) => console.error(error),

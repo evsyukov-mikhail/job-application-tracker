@@ -31,7 +31,9 @@ export default function Layout() {
           </li>
         </ul>
       </nav>
-      <Outlet />
+      <main className="p-4">
+        <Outlet />
+      </main>
     </>
   );
 }

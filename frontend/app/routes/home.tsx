@@ -82,7 +82,7 @@ export default function Home() {
   }, [searchParams]);
 
   return (
-    <main className="p-4">
+    <>
       <Search
         searchParamsState={[searchParams, setSearchParams]}
         onSearch={() => jobApplicationQuery.refetch()}
@@ -99,6 +99,6 @@ export default function Home() {
           />
         )}
       </div>
-    </main>
+    </>
   );
 }

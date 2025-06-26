@@ -38,12 +38,12 @@ export default function Reminders() {
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4">
-      {remindersQuery.data?.map(reminder =>
+      {remindersQuery.data?.length ? remindersQuery.data?.map(reminder =>
         <Reminder
           key={reminder._id}
           reminder={reminder} 
         />
-      )}
+      ) : <div>No reminders yet</div>}
     </div>
   );
 }

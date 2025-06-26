@@ -7,6 +7,6 @@ interface Props {
 export const Reminder = (props: Props) => (
   <div className="bg-white p-4 rounded-lg shadow-md text-sm">
     <h3 className="text-lg font-semibold text-gray-800 mb-1">{props.reminder.title}</h3>
-    <p className="text-gray-600">Due: {props.reminder.date.toLocaleDateString()}</p>
+    <p className="text-gray-600">Due: {props.reminder.date}</p>
   </div>
 )

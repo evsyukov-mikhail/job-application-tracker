@@ -31,7 +31,7 @@ export class RemindersController {
 
       return res.status(200).json(reminders);
     } catch (error) {
-      return res.status(400).json({ message: (error as Error).message });
+      return res.status(400).json({ error: (error as Error).message });
     }
   }
 
@@ -46,7 +46,7 @@ export class RemindersController {
       const createdReminder = await this.remindersService.createReminder(req.userId, dto);
       return res.status(200).json(createdReminder);
     } catch (error) {
-      return res.status(400).json({ message: (error as Error).message });
+      return res.status(400).json({ error: (error as Error).message });
     }
   }
 

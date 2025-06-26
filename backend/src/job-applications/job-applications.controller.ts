@@ -5,7 +5,6 @@ import { JobApplicationsService } from './job-applications.service';
 import { JobApplicationStatusDTO } from '../dtos/job-application-status.dto';
 import { AuthGuard } from '../auth/auth.guard';
 import { CacheService } from 'src/cache/cache.service';
-import EventEmitter2 from 'eventemitter2';
 import { Observable } from 'rxjs';
 
 @Controller('job-applications')
@@ -39,7 +38,7 @@ export class JobApplicationsController {
 
       return res.status(200).json(jobApplications);
     } catch (error) {
-      return res.status(400).json({ message: (error as Error).message });
+      return res.status(400).json({ error: (error as Error).message });
     }
   }
 
@@ -65,7 +64,7 @@ export class JobApplicationsController {
 
       return res.status(200).json(jobApplications);
     } catch (error) {
-      return res.status(400).json({ message: (error as Error).message });
+      return res.status(400).json({ error: (error as Error).message });
     }
   }
 
@@ -82,7 +81,7 @@ export class JobApplicationsController {
         createJobApplication(req.userId, dto);
       return res.status(200).json(createdJobApplication);
     } catch (error) {
-      return res.status(400).json({ message: (error as Error).message });
+      return res.status(400).json({ error: (error as Error).message });
     }
   }
 
@@ -103,7 +102,7 @@ export class JobApplicationsController {
       }
       return res.status(200).json(updatedJobApplication);
     } catch (error) {
-      return res.status(400).json({ message: (error as Error).message });
+      return res.status(400).json({ error: (error as Error).message });
     }
   }
 
@@ -122,7 +121,7 @@ export class JobApplicationsController {
       }
       return res.status(200).json({ message: `Successfully deleted job application with ID ${id}` });
     } catch (error) {
-      return res.status(400).json({ message: (error as Error).message });
+      return res.status(400).json({ error: (error as Error).message });
     }
   }
 

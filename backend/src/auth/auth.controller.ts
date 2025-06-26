@@ -16,7 +16,7 @@ export class AuthController {
       const result = await this.authService.signUp(dto);
       return res.status(200).json(result);
     } catch (error) {
-      return res.status(400).json({ message: (error as Error).message });
+      return res.status(400).json({ error: (error as Error).message });
     }
   }
 
@@ -26,7 +26,7 @@ export class AuthController {
       const result = await this.authService.logIn(dto);
       return res.status(200).json(result);
     } catch (error) {
-      return res.status(400).json({ message: (error as Error).message });
+      return res.status(400).json({ error: (error as Error).message });
     }
   }
 

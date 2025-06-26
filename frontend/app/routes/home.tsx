@@ -4,7 +4,7 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import type { JobApplication as IJobApplication } from "~/interfaces/job-application.interface";
 import { JobApplication } from "~/atoms/job-application";
 import { useEffect, useState } from "react";
-import { useLocation, useNavigate } from "react-router";
+import { NavLink, useLocation, useNavigate } from "react-router";
 import { Search } from "~/components/search";
 
 export function meta({}: Route.MetaArgs) {
@@ -91,6 +91,14 @@ export default function Home() {
         searchParamsState={[searchParams, setSearchParams]}
         onSearch={() => jobApplicationQuery.refetch()}
       />
+      <NavLink
+        to="/create-job-application"
+        onClick={() => {}}
+        className="w-1/6 px-6 py-3 bg-green-600 text-center text-white font-semibold rounded-lg shadow-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition duration-150 ease-in-out text-base mb-6 mx-auto block"
+        aria-label="Create a new job application"
+      >
+        Create New Job Application
+      </NavLink>
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4">
         {jobApplicationQuery.data?.map(jobApplication =>
           <JobApplication

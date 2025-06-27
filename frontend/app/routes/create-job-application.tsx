@@ -126,6 +126,8 @@ export default function CreateJobApplication() {
             Create Application
           </button>
         </div>
+
+        {mutation.isError && <p>{mutation.error.message}</p>}
       </div>
     </form>
   );

@@ -4,21 +4,22 @@ import Redis from 'ioredis';
 
 @Injectable()
 export class CacheService {
+  public readonly redisStore: Redis | undefined;
+
   constructor(
     @Inject('CACHE_INSTANCE') private readonly keyv: Keyv,
-    public readonly redisStore: Redis | undefined,
   ) {
     const keyvStore = keyv.opts.store;
 
     if (!keyvStore || !(keyvStore as any).constructor || (keyvStore as any).constructor.name !== 'Redis') {
-      redisStore = undefined;
+      this.redisStore = undefined;
       return;
     }
 
     const potentialRedisClient = keyvStore as unknown as Redis;
 
     if (!potentialRedisClient || typeof potentialRedisClient.status !== 'string' || typeof potentialRedisClient.on !== 'function') {
-      redisStore = undefined;
+      this.redisStore = undefined;
       return;
     }
 

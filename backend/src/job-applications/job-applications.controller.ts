@@ -39,66 +39,14 @@ export class JobApplicationsController {
       }
 
       const jobApplications = await this.jobApplicationsService.findJobApplications(req.userId, status, companyName, jobTitle);
-      return res.status(200).json(jobApplications);
-    } catch (error) {
-      return res.status(400).json({ error: (error as Error).message });
-    }
-  }
 
-  /*
-  @UseGuards(AuthGuard)
-  @Get()
-  async findAllJobApplications(
-    @Req() req: Request & { userId: string },
-    @Res() res: Response,
-    @Query('status') status: Status
-  ) {
-    try {
-      const cacheKey = status ? `${req.userId}:${status}` : `${req.userId}:all_job_applications`;
-      const cached = await this.cache.get(cacheKey);
-
-      if (cached) {
-        return res.status(200).json(JSON.parse(cached as string));
-      }
-
-      const jobApplications = status
-        ? await this.jobApplicationsService.findJobApplicationsByStatus(req.userId, status)
-        : await this.jobApplicationsService.findAllJobApplications(req.userId);
-
-      await this.cache.set(cacheKey, JSON.stringify(jobApplications));
+      await this.cache.redisStore?.hset(req.userId, { [cacheKey]: JSON.stringify(jobApplications) });
 
       return res.status(200).json(jobApplications);
     } catch (error) {
       return res.status(400).json({ error: (error as Error).message });
     }
   }
-
-  @UseGuards(AuthGuard)
-  @Get('/search')
-  async findJobApplicationsByKeywords(
-    @Req() req: Request & { userId: string },
-    @Res() res: Response,
-    @Query('companyName') companyName: string,
-    @Query('jobTitle') jobTitle: string
-  ) {
-    try {
-      const cacheKey = `${req.userId}:keywords:${companyName}-${jobTitle}`;
-      const cached = await this.cache.get(cacheKey);
-      if (cached) {
-        return res.status(200).json(JSON.parse(cached as string));
-      }
-
-      const jobApplications = await this.jobApplicationsService.
-        findJobApplicationsByKeywords(req.userId, companyName, jobTitle);
-
-      await this.cache.set(cacheKey, JSON.stringify(jobApplications));
-
-      return res.status(200).json(jobApplications);
-    } catch (error) {
-      return res.status(400).json({ error: (error as Error).message });
-    }
-  }
-    */
 
   @UseGuards(AuthGuard)
   @Post()

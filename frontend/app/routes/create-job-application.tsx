@@ -1,5 +1,5 @@
 import { useMutation } from "@tanstack/react-query";
-import { useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import { NavLink, useNavigate } from "react-router";
 import type { CreateJobApplication } from "~/interfaces/create-job-application.interface";
 import { useUserStore } from "~/stores/user.store";
@@ -27,14 +27,15 @@ export default function CreateJobApplication() {
         }),
       })
         .then(res => res.json())
-        .then(json => { if (json.error) throw new Error(json.error) }),
+        .then(json => {
+          if (json.error) throw new Error(json.message.join(', '))
+          else navigate('/');
+        }),
   })
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-
     mutation.mutate(formData);
-    navigate('/');
   }
 
   return (

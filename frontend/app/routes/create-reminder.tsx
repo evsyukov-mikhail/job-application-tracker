@@ -28,6 +28,7 @@ export default function CreateReminder() {
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    mutation.mutate(formData);
   }
 
   return (

@@ -1,8 +1,10 @@
-import { useState } from "react";
+import { useMutation } from "@tanstack/react-query";
+import { useState, type FormEvent } from "react";
 import { NavLink } from "react-router";
+import type { CreateJobApplication } from "~/interfaces/create-job-application.interface";
 
 export default function CreateJobApplication() {
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<CreateJobApplication>({
     companyName: '',
     jobTitle: '',
     applicationDate: '',
@@ -12,7 +14,9 @@ export default function CreateJobApplication() {
 
   const statusOptions = ['Applied', 'Interviewing', 'Offer', 'Rejected'];
 
-  const handleSubmit = () => {}
+  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+  }
 
   return (
     <form onSubmit={handleSubmit} className="bg-white p-4 rounded-lg shadow-md w-full max-w-sm mx-auto text-sm">

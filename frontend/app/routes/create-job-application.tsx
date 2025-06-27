@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { NavLink } from "react-router";
 
 export default function CreateJobApplication() {
   const [formData, setFormData] = useState({
@@ -10,8 +11,6 @@ export default function CreateJobApplication() {
   });
 
   const statusOptions = ['Applied', 'Interviewing', 'Offer', 'Rejected'];
-
-  const handleCancel = () => {}
 
   const handleSubmit = () => {}
 
@@ -89,13 +88,13 @@ export default function CreateJobApplication() {
         </div>
 
         <div className="flex justify-end space-x-3 pt-2">
-          <button
-            onClick={handleCancel}
+          <NavLink
+            to="/"
             className="px-4 py-2 bg-gray-300 text-gray-800 rounded-md shadow hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 text-sm"
             aria-label="Cancel creating new job application"
           >
             Cancel
-          </button>
+          </NavLink>
           <button
             type="submit"
             className="px-4 py-2 bg-blue-600 text-white font-medium rounded-md shadow hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-150 ease-in-out text-sm"

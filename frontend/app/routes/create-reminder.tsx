@@ -1,13 +1,34 @@
-import { useState } from "react";
-import { NavLink } from "react-router";
+import { useMutation } from "@tanstack/react-query";
+import { useState, type FormEvent } from "react";
+import { NavLink, useNavigate } from "react-router";
+import type { CreateReminder } from "~/interfaces/create-reminder.interface";
+import { useUserStore } from "~/stores/user.store";
 
-export default function CreateReminders() {
-  const [formData, setFormData] = useState({
+export default function CreateReminder() {
+  const navigate = useNavigate();
+  const { user } = useUserStore();
+
+  const [formData, setFormData] = useState<CreateReminder>({
     title: '',
     date: '',
   });
 
-  const handleSubmit = () => {}
+  const headers = { 'Authorization': `Bearer ${user.token}`, 'Content-Type': 'application/json' };
+  const mutation = useMutation({
+    mutationFn: (reminder: CreateReminder) =>
+      fetch(`${import.meta.env.VITE_SERVER_HOST}/reminders`, {
+        method: 'POST', headers, body: JSON.stringify({ ...reminder, date: new Date(reminder.date).toUTCString() }),
+      })
+        .then(res => res.json())
+        .then(json => {
+          if (json.error) throw new Error(json.message.join(', '))
+          else navigate('/');
+        }),
+  })
+
+  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+  }
 
   return (
     <form onSubmit={handleSubmit} className="bg-white p-4 rounded-lg shadow-md w-full max-w-sm mx-auto text-sm">

@@ -23,7 +23,6 @@ export default function Home() {
     companyName: '',
     jobTitle: '',
   });
-
   const [searchQuery, setSearchQuery] = useState('');
 
   const jobApplicationQuery = useQuery({

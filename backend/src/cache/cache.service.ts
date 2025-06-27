@@ -1,19 +1,28 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { Cacheable } from 'cacheable';
+import { Cacheable, Keyv } from 'cacheable';
+import Redis from 'ioredis';
 
 @Injectable()
 export class CacheService {
-  constructor(@Inject('CACHE_INSTANCE') private readonly cache: Cacheable) {}
+  constructor(
+    @Inject('CACHE_INSTANCE') private readonly keyv: Keyv,
+    public readonly redisStore: Redis | undefined,
+  ) {
+    const keyvStore = keyv.opts.store;
 
-  async get(key: string): Promise<unknown> {
-    return await this.cache.get(key);
-  }
+    if (!keyvStore || !(keyvStore as any).constructor || (keyvStore as any).constructor.name !== 'Redis') {
+      redisStore = undefined;
+      return;
+    }
 
-  async set(key: string, value: unknown, ttl?: number | string): Promise<void> {
-    await this.cache.set(key, value, ttl);
-  }
+    const potentialRedisClient = keyvStore as unknown as Redis;
 
-  async delete(key: string): Promise<void> {
-    await this.cache.delete(key);
+    if (!potentialRedisClient || typeof potentialRedisClient.status !== 'string' || typeof potentialRedisClient.on !== 'function') {
+      redisStore = undefined;
+      return;
+    }
+
+    this.redisStore = potentialRedisClient;
+    this.redisStore.on('error', err => console.error(err));
   }
 }

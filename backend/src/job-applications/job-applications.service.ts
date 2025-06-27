@@ -22,8 +22,22 @@ export class JobApplicationsService {
 
   private readonly subjects = new Map<string, ReplaySubject<JobApplication>>();
 
-  findAllJobApplications(userId: string): Promise<JobApplication[]> {
-    return this.jobApplicationModel.find({ userId });
+  findJobApplications(userId: string, status?: string, companyName?: string, jobTitle?: string): Promise<JobApplication[]> {
+    const query: any = { userId };
+
+    if (status) {
+      query.status = { $regex: new RegExp(status, 'i') };
+    }
+
+    if (companyName) {
+      query.companyName = { $regex: new RegExp(companyName, 'i') };
+    }
+
+    if (jobTitle) {
+      query.jobTitle = { $regex: new RegExp(jobTitle, 'i') };
+    }
+
+    return this.jobApplicationModel.find(query);
   }
 
   findJobApplicationsByStatus(userId: string, status: Status): Promise<JobApplication[]> {

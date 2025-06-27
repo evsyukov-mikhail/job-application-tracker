@@ -8,10 +8,7 @@ import { CacheService } from './cache.service';
     CacheService,
     {
       provide: 'CACHE_INSTANCE',
-      useFactory: () => {
-        const secondary = createKeyv(`${process.env.REDIS_CONNECTION_STRING}`);
-        return new Cacheable({ secondary, ttl: '5m' });
-      },
+      useFactory: () => createKeyv(`${process.env.REDIS_CONNECTION_STRING}`)
     },
   ],
   exports: ['CACHE_INSTANCE'],

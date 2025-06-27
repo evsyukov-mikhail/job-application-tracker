@@ -17,6 +17,37 @@ export class JobApplicationsController {
 
   @UseGuards(AuthGuard)
   @Get()
+  async findJobApplications(
+    @Req() req: Request & { userId: string },
+    @Res() res: Response,
+    @Query('status') status: Status,
+    @Query('companyName') companyName: string,
+    @Query('jobTitle') jobTitle: string,
+  ) {
+    try {
+      let cacheKey = '';
+
+      if (status) cacheKey += status
+      if (companyName) cacheKey += `:${companyName}`
+      if (jobTitle) cacheKey += `:${jobTitle}`
+
+      if (!status && !companyName && !jobTitle) cacheKey += 'all';
+
+      const cached = await this.cache.redisStore?.hget(req.userId, cacheKey);
+      if (cached) {
+        return res.status(200).json(JSON.parse(cached as string));
+      }
+
+      const jobApplications = await this.jobApplicationsService.findJobApplications(req.userId, status, companyName, jobTitle);
+      return res.status(200).json(jobApplications);
+    } catch (error) {
+      return res.status(400).json({ error: (error as Error).message });
+    }
+  }
+
+  /*
+  @UseGuards(AuthGuard)
+  @Get()
   async findAllJobApplications(
     @Req() req: Request & { userId: string },
     @Res() res: Response,
@@ -67,6 +98,7 @@ export class JobApplicationsController {
       return res.status(400).json({ error: (error as Error).message });
     }
   }
+    */
 
   @UseGuards(AuthGuard)
   @Post()

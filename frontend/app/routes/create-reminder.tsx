@@ -77,6 +77,8 @@ export default function CreateReminder() {
             Create Reminder
           </button>
         </div>
+
+        {mutation.isError && <p>{mutation.error.message}</p>}
       </div>
     </form>
   );

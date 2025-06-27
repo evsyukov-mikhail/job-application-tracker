@@ -1,9 +1,13 @@
 import { useMutation } from "@tanstack/react-query";
 import { useState, type FormEvent } from "react";
-import { NavLink } from "react-router";
+import { NavLink, useNavigate } from "react-router";
 import type { CreateJobApplication } from "~/interfaces/create-job-application.interface";
+import { useUserStore } from "~/stores/user.store";
 
 export default function CreateJobApplication() {
+  const navigate = useNavigate();
+  const { user } = useUserStore();
+
   const [formData, setFormData] = useState<CreateJobApplication>({
     companyName: '',
     jobTitle: '',
@@ -14,8 +18,23 @@ export default function CreateJobApplication() {
 
   const statusOptions = ['Applied', 'Interviewing', 'Offer', 'Rejected'];
 
+  const headers = { 'Authorization': `Bearer ${user.token}`, 'Content-Type': 'application/json' };
+  const mutation = useMutation({
+    mutationFn: (jobApplication: CreateJobApplication) =>
+      fetch(`${import.meta.env.VITE_SERVER_HOST}/job-applications`, {
+        method: 'POST', headers, body: JSON.stringify({
+          ...jobApplication, applicationDate: new Date(jobApplication.applicationDate).toUTCString(),
+        }),
+      })
+        .then(res => res.json())
+        .then(json => { if (json.error) throw new Error(json.error) }),
+  })
+
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+
+    mutation.mutate(formData);
+    navigate('/');
   }
 
   return (

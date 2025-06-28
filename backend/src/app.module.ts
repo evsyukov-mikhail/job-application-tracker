@@ -7,8 +7,6 @@ import { CacheModule } from './cache/cache.module';
 import { RemindersModule } from './reminders/reminders.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { EventEmitterModule } from '@nestjs/event-emitter';
-import { CronJobsModule } from './cron-jobs/cron-jobs.module';
-import { MailsModule } from './mails/mails.module';
 import { MailsModule } from './mails/mails.module';
 
 @Module({
@@ -20,7 +18,6 @@ import { MailsModule } from './mails/mails.module';
     RemindersModule,
     ScheduleModule.forRoot(),
     EventEmitterModule.forRoot(),
-    CronJobsModule,
     MailsModule,
   ],
   providers: [CryptoService],

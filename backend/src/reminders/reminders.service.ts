@@ -16,11 +16,11 @@ export class RemindersService {
 
   constructor(
     @Inject('REMINDER_MODEL')
-    private reminderModel: Model<Reminder>,
+    private readonly reminderModel: Model<Reminder>,
     @Inject('USER_MODEL')
-    private userModel: Model<User>,
-    private schedulerRegistry: SchedulerRegistry,
-    private mailsService: MailsService,
+    private readonly userModel: Model<User>,
+    private readonly schedulerRegistry: SchedulerRegistry,
+    private readonly mailsService: MailsService,
   ) {
     this.transporter = nodemailer.createTransport({
       service: 'gmail',

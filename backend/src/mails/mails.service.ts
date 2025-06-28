@@ -13,8 +13,8 @@ export class MailsService {
 
   constructor(
     @Inject('USER_MODEL')
-    private userModel: Model<User>,
-    private schedulerRegistry: SchedulerRegistry
+    private readonly userModel: Model<User>,
+    private readonly schedulerRegistry: SchedulerRegistry
   ) {
     this.transporter = nodemailer.createTransport({
       service: 'gmail',

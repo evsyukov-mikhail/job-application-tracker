@@ -19,16 +19,15 @@ export class RemindersController {
     @Res() res: Response,
   ) {
     try {
-      const cached = await this.cache.redisStore?.hget(req.userId, 'all');
+      const cached = await this.cache.redisStore?.hget(req.userId, 'all_reminders');
       if (cached) {
         return res.status(200).json(JSON.parse(cached as string));
       }
 
       const reminders = await this.remindersService.findAllReminders(req.userId);
 
-      await this.cache.redisStore?.hset(req.userId, {
-        'all': JSON.stringify(reminders)
-      });
+      await this.cache.redisStore?.hset(req.userId, { 'all_reminders': JSON.stringify(reminders) });
+      await this.cache.redisStore?.expire(req.userId, 60 * 60);
 
       return res.status(200).json(reminders);
     } catch (error) {

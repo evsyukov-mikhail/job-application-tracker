@@ -4,12 +4,13 @@ import { JobApplicationDTO, Status } from '../dtos/job-application.dto';
 import { JobApplication } from '../interfaces/job-application.interface';
 import { map, Observable, ReplaySubject } from 'rxjs';
 import { EventEmitter2, OnEvent } from '@nestjs/event-emitter';
+import { MailsService } from 'src/mails/mails.service';
 
 @Injectable()
 export class JobApplicationsService {
   constructor(
     @Inject('JOB_APPLICATION_MODEL')
-    private jobApplicationModel: Model<JobApplication>,
+    private readonly jobApplicationModel: Model<JobApplication>,
     private readonly eventEmitter: EventEmitter2,
   ) {}
 
@@ -68,8 +69,6 @@ export class JobApplicationsService {
     if (!jobApplication) {
       throw new Error(`Failed to find job application by ID ${id}`);
     }
-
-    console.log(jobApplication, userId, new mongoose.Types.ObjectId(jobApplication.userId).equals(userId));
 
     const isJobApplicationOfUser = new mongoose.Types.ObjectId(jobApplication.userId).equals(userId);
 

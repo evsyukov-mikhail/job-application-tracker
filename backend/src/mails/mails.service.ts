@@ -4,6 +4,7 @@ import { CronJob } from 'cron';
 import { Model } from 'mongoose';
 import * as nodemailer from 'nodemailer';
 import SMTPTransport from 'nodemailer/lib/smtp-transport';
+import { MailReminder } from 'src/interfaces/mail-reminder.interface';
 import { User } from 'src/interfaces/user.interface';
 
 @Injectable()
@@ -27,7 +28,7 @@ export class MailsService {
     });
   }
 
-  createMailReminder(userId: string, date: Date, subject: string, text: string): void {
+  createMailReminder({ date, userId, subject, text }: MailReminder): void {
     const job = new CronJob(date, async () => {
       const receiverEmail = await this.getUserEmailById(userId);
 

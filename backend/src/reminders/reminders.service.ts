@@ -7,6 +7,7 @@ import { Reminder } from 'src/interfaces/reminder.interface';
 import * as nodemailer from 'nodemailer';
 import SMTPTransport from 'nodemailer/lib/smtp-transport';
 import { User } from 'src/interfaces/user.interface';
+import { MailsService } from 'src/mails/mails.service';
 
 @Injectable()
 export class RemindersService {
@@ -19,6 +20,7 @@ export class RemindersService {
     @Inject('USER_MODEL')
     private userModel: Model<User>,
     private schedulerRegistry: SchedulerRegistry,
+    private mailsService: MailsService,
   ) {
     this.transporter = nodemailer.createTransport({
       service: 'gmail',
@@ -37,21 +39,12 @@ export class RemindersService {
   }
 
   async createReminder(userId: string, dto: ReminderDTO): Promise<Reminder> {
-    const job = new CronJob(dto.date, async () => {
-      const receiverEmail = await this.getUserEmailById(userId);
-
-      await this.transporter.sendMail({
-        from: process.env.EMAIL,
-        to: receiverEmail,
-        subject: 'Reminder on your job application',
-        text: `Hi. You have been reminded on your schedule "${dto.title}" at ${dto.date.toDateString()}`,
-      });
+    this.mailsService.createMailReminder({
+      userId,
+      date: dto.date,
+      subject: 'Reminder on your job application',
+      text: `Hi. You have been reminded on your schedule "${dto.title}" at ${dto.date.toDateString()}`,
     });
-
-    const jobName = `${userId}:${Date.now().toString()}`;
-
-    this.schedulerRegistry.addCronJob(jobName, job as any);
-    job.start();
 
     const reminder = new this.reminderModel({ ...dto, userId });
     return reminder.save();

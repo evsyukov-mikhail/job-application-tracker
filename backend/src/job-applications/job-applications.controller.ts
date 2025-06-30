@@ -4,7 +4,7 @@ import { JobApplicationDTO, Status } from '../dtos/job-application.dto';
 import { JobApplicationsService } from './job-applications.service';
 import { JobApplicationStatusDTO } from '../dtos/job-application-status.dto';
 import { AuthGuard } from '../auth/auth.guard';
-import { CacheService } from 'src/cache/cache.service';
+import { CacheService } from '../cache/cache.service';
 import { Observable } from 'rxjs';
 
 @Controller('job-applications')

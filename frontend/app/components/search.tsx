@@ -11,16 +11,16 @@ export const Search = ({ searchParamsState: [searchParams, setSearchParams], ...
     <input
       type="text"
       placeholder="Search Job Title..."
-      value={searchParams.companyName}
-      onChange={event => setSearchParams(state => ({ ...state, companyName: event.target.value }))}
+      value={searchParams.jobTitle}
+      onChange={event => setSearchParams(state => ({ ...state, jobTitle: event.target.value }))}
       className="flex-1 px-3 py-1.5 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm"
       aria-label="Search job title"
     />
     <input
       type="text"
       placeholder="Search Company Name..."
-      value={searchParams.jobTitle}
-      onChange={event => setSearchParams(state => ({ ...state, jobTitle: event.target.value }))}
+      value={searchParams.companyName}
+      onChange={event => setSearchParams(state => ({ ...state, companyName: event.target.value }))}
       className="flex-1 px-3 py-1.5 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm"
       aria-label="Search company name"
     />

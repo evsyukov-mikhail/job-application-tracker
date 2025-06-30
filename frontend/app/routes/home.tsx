@@ -6,6 +6,7 @@ import { JobApplication } from "~/atoms/job-application";
 import { useEffect, useState } from "react";
 import { NavLink, useLocation, useNavigate } from "react-router";
 import { Search } from "~/components/search";
+import { FilterStatus } from "~/components/filter-status";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -23,6 +24,7 @@ export default function Home() {
     companyName: '',
     jobTitle: '',
   });
+  const [filterStatus, setFilterStatus] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
 
   const jobApplicationQuery = useQuery({
@@ -81,14 +83,24 @@ export default function Home() {
       queryParams.push(`jobTitle=${jobTitle}`);
     }
 
+    if (filterStatus && filterStatus !== 'All') {
+      queryParams.push(`status=${filterStatus}`);
+    }
+
     setSearchQuery(queryParams.length ? `?${queryParams.join('&')}` : '');
-  }, [searchParams]);
+
+    console.log(searchQuery);
+  }, [searchParams, filterStatus]);
 
   return (
     <>
       <Search
         searchParamsState={[searchParams, setSearchParams]}
         onSearch={() => jobApplicationQuery.refetch()}
+      />
+      <FilterStatus
+        statusState={[filterStatus, setFilterStatus]}
+        statuses={['Applied', 'Interviewing', 'Offer', 'Rejected']}
       />
       <NavLink
         to="/create-job-application"

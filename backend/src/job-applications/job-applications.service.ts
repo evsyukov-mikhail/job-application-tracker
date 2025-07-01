@@ -4,7 +4,6 @@ import { JobApplicationDTO, Status } from '../dtos/job-application.dto';
 import { JobApplication } from '../interfaces/job-application.interface';
 import { map, Observable, ReplaySubject } from 'rxjs';
 import { EventEmitter2, OnEvent } from '@nestjs/event-emitter';
-import { MailsService } from 'src/mails/mails.service';
 
 @Injectable()
 export class JobApplicationsService {
@@ -29,24 +28,6 @@ export class JobApplicationsService {
     if (status) {
       query.status = { $regex: new RegExp(status, 'i') };
     }
-
-    if (companyName) {
-      query.companyName = { $regex: new RegExp(companyName, 'i') };
-    }
-
-    if (jobTitle) {
-      query.jobTitle = { $regex: new RegExp(jobTitle, 'i') };
-    }
-
-    return this.jobApplicationModel.find(query);
-  }
-
-  findJobApplicationsByStatus(userId: string, status: Status): Promise<JobApplication[]> {
-    return this.jobApplicationModel.find({ status, userId });
-  }
-
-  findJobApplicationsByKeywords(userId: string, companyName: string, jobTitle: string): Promise<JobApplication[]> {
-    const query: any = { userId };
 
     if (companyName) {
       query.companyName = { $regex: new RegExp(companyName, 'i') };

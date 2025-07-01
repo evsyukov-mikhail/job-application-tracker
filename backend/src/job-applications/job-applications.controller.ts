@@ -40,7 +40,6 @@ export class JobApplicationsController {
 
       const jobApplications = await this.jobApplicationsService.findJobApplications(req.userId, status, companyName, jobTitle);
 
-      // ADD TTL TO BOTH THIS CONTROLLER AND REMINDERS CONTROLLER
       await this.cache.redisStore?.hset(req.userId, { [cacheKey]: JSON.stringify(jobApplications) });
       await this.cache.redisStore?.expire(req.userId, 60 * 60);
 

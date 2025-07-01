@@ -106,10 +106,4 @@ export class JobApplicationsController {
     }
   }
 
-  @Sse('job-application-updates')
-  @UseGuards(AuthGuard)
-  jobApplicationUpdates(@Req() req: Request & { userId: string }): Observable<MessageEvent> {
-    return this.jobApplicationsService.getJobApplicationUpdates(req.userId);
-  }
-
 }

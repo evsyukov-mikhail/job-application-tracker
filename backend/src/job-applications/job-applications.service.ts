@@ -10,7 +10,6 @@ export class JobApplicationsService {
   constructor(
     @Inject('JOB_APPLICATION_MODEL')
     private readonly jobApplicationModel: Model<JobApplication>,
-    private readonly eventEmitter: EventEmitter2,
   ) {}
 
   private readonly statusPrecedences = {
@@ -61,11 +60,6 @@ export class JobApplicationsService {
       throw new Error(`Failed to update job application status: ${status} has lower precendence than ${jobApplication.status}`);
     }
 
-    this.eventEmitter.emit('jobApplicationStatus.updated', {
-      updatedJobApplication: { id: jobApplication._id, status },
-      userId,
-    });
-
     return this.jobApplicationModel.findByIdAndUpdate(id, { status }, { new: true });
   }
 
@@ -80,30 +74,5 @@ export class JobApplicationsService {
     }
 
     return this.jobApplicationModel.findByIdAndDelete(id);
-  }
-
-  getJobApplicationUpdates(userId: string): Observable<MessageEvent> {
-    if (!this.subjects.has(userId)) {
-      const newSubject = new ReplaySubject<JobApplication>(5);
-      this.subjects.set(userId, newSubject);
-    }
-
-    const subject = this.subjects.get(userId)!;
-
-    return subject.asObservable().pipe(
-      map(payload => ({ data: payload }))
-    );
-  }
-
-  @OnEvent('jobApplicationStatus.updated')
-  handleJobApplicationStatusUpdate(payload: { updatedJobApplication: JobApplication, userId: string }) {
-    const subject = this.subjects.get(payload.userId);
-
-    if (!subject) {
-      const newSubject = new ReplaySubject<JobApplication>(5);
-      this.subjects.set(payload.userId, newSubject);
-    }
-
-    subject?.next(payload.updatedJobApplication);
   }
 }

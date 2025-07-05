@@ -5,23 +5,23 @@ import { EventEmitterModule } from "@nestjs/event-emitter";
 import { JwtService } from "@nestjs/jwt";
 import { CacheService } from "../cache/cache.service";
 import { Request, Response } from "express";
-import { JobApplicationDTO, Status } from "../dtos/job-application.dto";
+import { Status } from "../dtos/job-application.dto";
+import { JobApplication } from "src/interfaces/job-application.interface";
+import { Types } from "mongoose";
 
 import * as dotenv from 'dotenv';
-import { JobApplication } from "src/interfaces/job-application.interface";
-import { Mongoose, Types } from "mongoose";
 dotenv.config();
 
 describe('JobApplicationsController', () => {
   let controller: JobApplicationsController;
   let service: JobApplicationsService;
 
-  const requestMock = {
+  const mockRequest = {
     query: {},
     userId: '',
   } as unknown as Request & { userId: string };
 
-  const responseMock = {
+  const mockResponse = {
     status: jest.fn().mockReturnThis(),
     json: jest.fn(x => x),
   } as unknown as Response;
@@ -49,7 +49,6 @@ describe('JobApplicationsController', () => {
     };
 
     const module = await Test.createTestingModule({
-      imports: [EventEmitterModule.forRoot()],
       controllers: [JobApplicationsController],
       providers: [
         JobApplicationsService,
@@ -88,7 +87,7 @@ describe('JobApplicationsController', () => {
     }] as JobApplication[];
     jest.spyOn(service, 'findJobApplications').mockResolvedValue(mockResult);
 
-    const result = await controller.findJobApplications(requestMock, responseMock, Status.APPLIED, '', '');
+    const result = await controller.findJobApplications(mockRequest, mockResponse, Status.APPLIED, '', '');
     expect(result).toBe(mockResult);
   });
 
@@ -102,7 +101,7 @@ describe('JobApplicationsController', () => {
     } as JobApplication;
     jest.spyOn(service, 'createJobApplication').mockResolvedValue(mockResult);
 
-    const result = await controller.createJobApplication(requestMock, responseMock, {
+    const result = await controller.createJobApplication(mockRequest, mockResponse, {
       companyName: '',
       jobTitle: 'job title',
       applicationDate: new Date(),
@@ -123,7 +122,7 @@ describe('JobApplicationsController', () => {
     } as JobApplication;
     jest.spyOn(service, 'updateJobApplicationStatus').mockResolvedValue(mockResult);
 
-    const result = await controller.updateJobApplicationStatus(requestMock, responseMock, {
+    const result = await controller.updateJobApplicationStatus(mockRequest, mockResponse, {
       status: Status.OFFER,
     }, 'D3D0A4B374837B02A823E0AB');
     expect(result).toBe(mockResult);
@@ -140,7 +139,7 @@ describe('JobApplicationsController', () => {
     } as JobApplication;
     jest.spyOn(service, 'deleteJobApplication').mockResolvedValue(mockResult);
 
-    const result = await controller.deleteJobApplication(requestMock, responseMock, 'D3D0A4B374837B02A823E0AB');
+    const result = await controller.deleteJobApplication(mockRequest, mockResponse, 'D3D0A4B374837B02A823E0AB');
     expect(result).toEqual({
       message: 'Successfully deleted job application with ID D3D0A4B374837B02A823E0AB'
     });

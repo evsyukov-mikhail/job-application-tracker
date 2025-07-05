@@ -73,4 +73,16 @@ describe('RemindersController', () => {
 
   it('RemindersController defined', () => expect(controller).toBeDefined());
   it('RemindersService defined', () => expect(service).toBeDefined());
+
+  it('Find all reminders', async () => {
+    const mockResult = [{
+      title: 'Reminder',
+      date: 'date',
+      userId: '1'
+    }] as Reminder[];
+    jest.spyOn(service, 'findAllReminders').mockResolvedValue(mockResult);
+
+    const result = await controller.findAllReminders(mockRequest, mockResponse);
+    expect(result).toBe(mockResult);
+  });
 })

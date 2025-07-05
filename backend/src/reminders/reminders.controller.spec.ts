@@ -85,4 +85,21 @@ describe('RemindersController', () => {
     const result = await controller.findAllReminders(mockRequest, mockResponse);
     expect(result).toBe(mockResult);
   });
+
+  it('Create reminder', async () => {
+    const mockResult = {
+      title: 'Reminder',
+      date: 'date',
+      userId: '1'
+    } as Reminder;
+    jest.spyOn(service, 'createReminder').mockResolvedValue(mockResult);
+
+    const mockDTO = {
+      title: 'Reminder',
+      date: new Date(),
+      userId: '1',
+    };
+    const result = await controller.createReminder(mockRequest, mockResponse, mockDTO);
+    expect(result).toBe(mockResult);
+  })
 })

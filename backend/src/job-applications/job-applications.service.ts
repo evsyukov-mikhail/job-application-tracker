@@ -1,9 +1,7 @@
-import { Inject, Injectable, MessageEvent } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import mongoose, { Model } from 'mongoose';
 import { JobApplicationDTO, Status } from '../dtos/job-application.dto';
 import { JobApplication } from '../interfaces/job-application.interface';
-import { map, Observable, ReplaySubject } from 'rxjs';
-import { EventEmitter2, OnEvent } from '@nestjs/event-emitter';
 
 @Injectable()
 export class JobApplicationsService {
@@ -18,8 +16,6 @@ export class JobApplicationsService {
     [Status.OFFER]: 2,
     [Status.REJECTED]: 3,
   }
-
-  private readonly subjects = new Map<string, ReplaySubject<JobApplication>>();
 
   findJobApplications(userId: string, status?: string, companyName?: string, jobTitle?: string): Promise<JobApplication[]> {
     const query: any = { userId };

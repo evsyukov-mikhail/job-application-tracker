@@ -5,8 +5,9 @@ import { JobApplicationsService } from './job-applications.service';
 import { JobApplicationStatusDTO } from '../dtos/job-application-status.dto';
 import { AuthGuard } from '../auth/auth.guard';
 import { CacheService } from '../cache/cache.service';
-import { Observable } from 'rxjs';
+import { ApiOperation, ApiParam, ApiQuery, ApiTags } from '@nestjs/swagger';
 
+@ApiTags('job-applications')
 @Controller('job-applications')
 export class JobApplicationsController {
 
@@ -16,6 +17,10 @@ export class JobApplicationsController {
   ) {}
 
   @UseGuards(AuthGuard)
+  @ApiOperation({ summary: 'Find all job applications' })
+  @ApiQuery({ name: 'status', required: false, enum: Status, description: 'Filter by status' })
+  @ApiQuery({ name: 'companyName', required: false, type: String, description: 'Filter by company name' })
+  @ApiQuery({ name: 'jobTitle', required: false, type: String, description: 'Filter by job title' })
   @Get()
   async findJobApplications(
     @Req() req: Request & { userId: string },
@@ -50,6 +55,7 @@ export class JobApplicationsController {
   }
 
   @UseGuards(AuthGuard)
+  @ApiOperation({ summary: 'Create a new job application' })
   @Post()
   @HttpCode(HttpStatus.CREATED)
   async createJobApplication(
@@ -67,6 +73,8 @@ export class JobApplicationsController {
   }
 
   @UseGuards(AuthGuard)
+  @ApiOperation({ summary: 'Update job application status' })
+  @ApiParam({ name: 'Job application ID', required: false, type: String, description: 'Job application ID' })
   @Put(':id')
   async updateJobApplicationStatus(
     @Req() req: Request & { userId: string },
@@ -88,6 +96,8 @@ export class JobApplicationsController {
   }
 
   @UseGuards(AuthGuard)
+  @ApiOperation({ summary: 'Delete job application' })
+  @ApiParam({ name: 'Job application ID', required: false, type: String, description: 'Job application ID' })
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   async deleteJobApplication(

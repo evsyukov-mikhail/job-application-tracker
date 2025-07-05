@@ -1,5 +1,5 @@
 import { Body, Controller, Get, Post, Req, Res, UseGuards } from '@nestjs/common';
-import { Response } from 'express';
+import { Request, Response } from 'express';
 import { AuthGuard } from '../auth/auth.guard';
 import { ReminderDTO } from '../dtos/reminder.dto';
 import { RemindersService } from './reminders.service';

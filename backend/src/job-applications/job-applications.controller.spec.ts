@@ -52,6 +52,8 @@ describe('JobApplicationsController', () => {
       controllers: [JobApplicationsController],
       providers: [
         JobApplicationsService,
+        CacheService,
+        JwtService,
         {
           provide: 'JOB_APPLICATION_MODEL',
           useValue: mockJobApplicationModel,
@@ -60,12 +62,10 @@ describe('JobApplicationsController', () => {
           provide: 'USER_MODEL',
           useValue: mockUserModel,
         },
-        CacheService,
         {
           provide: 'CACHE_INSTANCE',
           useValue: mockKeyv,
         },
-        JwtService,
       ],
     }).compile();
 

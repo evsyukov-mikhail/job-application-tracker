@@ -1,4 +1,3 @@
-import * as dotenv from 'dotenv';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { Test } from '@nestjs/testing';
@@ -6,16 +5,13 @@ import { CryptoModule } from '../crypto/crypto.module';
 import { JwtModule, JwtService } from '@nestjs/jwt';
 import { AuthResult } from 'src/interfaces/auth-result.interface';
 import { Request, Response } from 'express';
+
+import * as dotenv from 'dotenv';
 dotenv.config();
 
 describe('AuthController', () => {
   let controller: AuthController;
   let service: AuthService;
-
-  const mockRequest = {
-    query: {},
-    userId: '',
-  } as unknown as Request & { userId: string };
 
   const mockResponse = {
     status: jest.fn().mockReturnThis(),
@@ -37,11 +33,11 @@ describe('AuthController', () => {
       controllers: [AuthController],
       providers: [
         AuthService,
+        JwtService,
         {
           provide: 'USER_MODEL',
           useValue: mockUserModel,
         },
-        JwtService,
       ]
     }).compile();
 

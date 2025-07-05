@@ -1,13 +1,43 @@
 services:
+  backend:
+    build: ./backend
+    ports:
+      - 3001:3001
+    networks:
+      - main
+    env_file:
+      - ./backend/.env
+    develop:
+      watch:
+        - path: ./backend
+          action: rebuild
+          target: /usr/src/app
+
+  frontend:
+    build: ./frontend
+    ports:
+      - 5173:3000
+    networks:
+      - main
+    env_file:
+      - ./frontend/.env
+    develop:
+      watch:
+        - path: ./frontend
+          action: rebuild
+          target: /app
+
   redis:
-    container: job-appl-tracker-redis
-    image: 8.0.2-alpine
+    container_name: job-appl-tracker-redis
+    image: redis:8.0.2-alpine
     ports:
       - 6380:6379
     networks:
       - main
-    volumes: redis:/data
-    env_file: .redis.env
+    volumes:
+      - redis:/data
+    env_file: 
+      - .redis.env
     command: redis-server --save 60 1 --loglevel warning
 
 networks:

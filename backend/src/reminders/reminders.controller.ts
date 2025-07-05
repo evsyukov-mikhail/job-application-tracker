@@ -4,6 +4,7 @@ import { AuthGuard } from '../auth/auth.guard';
 import { ReminderDTO } from '../dtos/reminder.dto';
 import { RemindersService } from './reminders.service';
 import { CacheService } from '../cache/cache.service';
+import { ApiOperation } from '@nestjs/swagger';
 
 @Controller('reminders')
 export class RemindersController {
@@ -13,6 +14,7 @@ export class RemindersController {
   ) {}
 
   @UseGuards(AuthGuard)
+  @ApiOperation({ summary: 'Find all reminders' })
   @Get()
   async findAllReminders(
     @Req() req: Request & { userId: string },
@@ -36,6 +38,7 @@ export class RemindersController {
   }
 
   @UseGuards(AuthGuard)
+  @ApiOperation({ summary: 'Create reminder' })
   @Post()
   async createReminder(
     @Req() req: Request & { userId: string },

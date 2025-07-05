@@ -2,6 +2,7 @@ import { Body, Controller, HttpCode, HttpStatus, Post, Res } from '@nestjs/commo
 import { Response } from 'express';
 import { AuthService } from './auth.service';
 import { UserDTO } from '../dtos/user.dto';
+import { ApiOperation } from '@nestjs/swagger';
 
 @Controller('auth')
 export class AuthController {
@@ -9,8 +10,9 @@ export class AuthController {
     private authService: AuthService,
   ) {}
 
+  @ApiOperation({ summary: 'Sign Up' })
+  @Post('/signup') 
   @HttpCode(HttpStatus.OK)
-  @Post('/signup')
   async signUp(@Res() res: Response, @Body() dto: UserDTO) {
     try {
       const result = await this.authService.signUp(dto);
@@ -20,6 +22,7 @@ export class AuthController {
     }
   }
 
+  @ApiOperation({ summary: 'Log In' })
   @Post('/login')
   async login(@Res() res: Response, @Body() dto: UserDTO) {
     try {
